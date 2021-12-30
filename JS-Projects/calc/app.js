@@ -1,7 +1,14 @@
-const form=document.getElementById("loan-form").addEventListener('submit',calc);
+const form=document.getElementById("loan-form").addEventListener('submit',function(e){
+
+    document.getElementById('results').style.display='none';
+    document.getElementById('loading').style.display='block';
+    
+    setTimeout(calcResults,2000);
+    e.preventDefault();
+});
 
 
-function calc(e){
+function calcResults(){
 
     console.log('calculating...');
 
@@ -25,18 +32,24 @@ function calc(e){
         monthlyPayment.value=monthly.toFixed(2);
         totalPayment.value=(monthly*calculatedPayments).toFixed(2);
         totalInterest.value=((monthly*calculatedPayments)-principal).toFixed(2);
+
+        document.getElementById('results').style.display='block';
+        document.getElementById('loading').style.display='none';
         
     }else{//not finite- the user didn't insert enough info
         //we build a custom function to show the error in the UI
         showError("Insert more values");
     }
 
-    e.preventDefault();
+    
 
 }
 
 function showError(error){
 
+    //Hide results and loading
+    document.getElementById('results').style.display='none';
+    document.getElementById('loading').style.display='none';
     //get elements
     const card=document.querySelector(".card");
     const heading=document.querySelector(".heading");
@@ -52,6 +65,7 @@ function showError(error){
 
     //Insert error above heading
     card.insertBefore(errorDiv,heading);
+
 
     //Clear error after 3 seconds
     setTimeout(clearError,3000);
