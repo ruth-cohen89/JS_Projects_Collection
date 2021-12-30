@@ -8,7 +8,7 @@ const taskInput=document.querySelector('#task');
 
 //Call Load event listeners
 loadEventListeners();
-
+   
  //create Load event listeners
 function loadEventListeners(){
 
