@@ -9,9 +9,9 @@ GAME FUNCTION:
 //Game values
 let min=1,
     max=10,
-    winningNum=2,
+    winningNum=getRandomNum(min,max), 
     guessesLeft=3;
-
+    console.log(winningNum);
 //UI vars
 const game=document.querySelector("#game");
       minNum=document.querySelector(".min-num");
@@ -38,7 +38,7 @@ guessBtn.addEventListener('click',function(){
     //validate
     if (isNaN(guess)||guess<min||guess>max){
         setMessage(`Please enter a number between ${min} and ${max}`,'red');
-    }
+    }else{
 
     //Check if won
     if(guess===winningNum){
@@ -63,7 +63,7 @@ guessBtn.addEventListener('click',function(){
         guessInput.style.borderColor='red';
         setMessage(`${guess} is not correct, ${guessesLeft} guesses left`,'red');
         }
-        
+    }
     }
 });
 
@@ -72,7 +72,9 @@ function setMessage(msg, color){
     message.textContent=msg;
 }
 
-function getRandomNum()
+function getRandomNum(min,max){
+    return (Math.floor(Math.random()*(max-1+1)+min));
+}
 
 function gameOver(won,msg){
     let color;
