@@ -23,10 +23,18 @@ UI.prototype.addBookToList=function(book){
     list.appendChild(row);
 }
 
+//Delete Book
+UI.prototype.deleteBook=function(target){
+    if(target.className==='delete'){
+        target.parentElement.parentElement.remove();
+    }
+}
+
+//Clear fields
 UI.prototype.clearFields=function(){
-    document.getElementById('title').value="";
-    document.getElementById('author').value="";
-    document.getElementById('isbn').value="";
+    document.getElementById('title').value='';
+    document.getElementById('author').value='';
+    document.getElementById('isbn').value='';
 }
 
 //Show alert
@@ -58,9 +66,10 @@ document.getElementById('book-form').addEventListener('submit',function(e){
     //Instantiate book
     const book= new Book(title,author,isbn);
 
-    //Instantiate a UI object
+    //Instantiate UI 
     const ui= new UI();
-
+    console.log(ui)
+    console.log(UI.prototype)
     //Validate
     if(title===''|| author===''||isbn===''){
         //Error alert
@@ -91,3 +100,17 @@ function setMessage(msg,color){
     //Insert div before h1
     //card.insertBefore(msgDiv,title);
 }
+
+//Event listener for delete
+document.getElementById('book-list').addEventListener('click',function(e){
+    //Instantiate the UI(we have to, in order to use its prototype methods)
+    const ui=new UI();
+
+    //Delete book
+    ui.deleteBook(e.target);
+
+    //Show alert
+    ui.showAlert('Book removed!', 'success');
+     
+    e.preventDefault();
+});
