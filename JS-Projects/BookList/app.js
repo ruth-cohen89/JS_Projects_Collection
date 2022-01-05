@@ -8,7 +8,8 @@ function Book(title, author, isbn){
 //UI Constructor
 function UI() {}
 
-//Add a function to prototype of UI- Add book to list
+//UI prototype functions
+//Add book to list
 UI.prototype.addBookToList=function(book){
     const list = document.getElementById('book-list');
     //create tr element
@@ -68,8 +69,7 @@ document.getElementById('book-form').addEventListener('submit',function(e){
 
     //Instantiate UI 
     const ui= new UI();
-    console.log(ui)
-    console.log(UI.prototype)
+
     //Validate
     if(title===''|| author===''||isbn===''){
         //Error alert
@@ -89,21 +89,9 @@ document.getElementById('book-form').addEventListener('submit',function(e){
     e.preventDefault();
 });
 
-function setMessage(msg,color){
-    //create a div
-    const msgDiv=document.createElement('div');
-    //add a class to div
-    msgDiv.className="alert alert-danger "
-    //create text node &append to div
-    msgDiv.appendChild(document.createTextNode(msg));
-
-    //Insert div before h1
-    //card.insertBefore(msgDiv,title);
-}
-
 //Event listener for delete
 document.getElementById('book-list').addEventListener('click',function(e){
-    //Instantiate the UI(we have to, in order to use its prototype methods)
+    //Instantiate the UI (In order to use its prototype methods)
     const ui=new UI();
 
     //Delete book
