@@ -20,6 +20,7 @@ class UI{
         row.innerHTML= `
         <td>${book.title}</td>
         <td>${book.author}</td>
+        <td>${book.isbn}</td>
         <td><a href="#" class="delete">X<a></td>
         `;
     
@@ -29,7 +30,7 @@ class UI{
     //Delete Book
     deleteBook(target){
     if(target.className==='delete'){
-        target.parentElement.parentElement.remove();
+        target.parentElement.parentElement.remove();//a->td->tr
       }
     }
 
@@ -61,8 +62,62 @@ class UI{
 
 }
 
+//Local storage class 
+//(When we load the page the data is still there)
+class Store{
 
-//Event Listener
+    //Fetch the books from local storage
+    static getBooks() {
+        let books;
+        if(localStorage.getItem('books') === null) {
+          books = [];
+        } else {
+          books = JSON.parse(localStorage.getItem('books'));
+        }
+    
+        return books;
+      }
+
+    //Display books of LS in UI
+    static displayBooks() {
+        const books = Store.getBooks();
+    
+        books.forEach(function(book){
+          const ui  = new UI;
+    
+          // Add book to UI
+          ui.addBookToList(book);
+        });
+      }
+
+    //Add to local storage
+    static addBook(book) {
+        const books = Store.getBooks();
+    
+        books.push(book);
+    
+        localStorage.setItem('books', JSON.stringify(books));
+      }
+
+    static removeBook(isbn){
+        const books=Store.getBooks();
+
+        books.forEach(function(book,index){
+            if(book.isbn===isbn){
+                books.splice(index,1);
+            }
+        });
+        localStorage.setItem('books', JSON.stringify(books));
+
+        localStorage.setItem('books', JSON.stringify(books));
+    }
+}
+
+//DOM load event 
+//(every time the page is loaded the books in LS are updated in the UI)
+document.addEventListener('DOMContentLoaded', Store.displayBooks);
+
+//Event Listener for adding a book 
 document.getElementById('book-form').addEventListener('submit',function(e){
     //Get form values
     const title=document.getElementById('title').value;
@@ -77,13 +132,17 @@ document.getElementById('book-form').addEventListener('submit',function(e){
 
     //Validate
     if(title===''|| author===''||isbn===''){
-        //Error alert
+    //Error alert
     ui.showAlert('Please fill in all fields', 'error');
     
     } else {
-    //Add book to list
+    //Add book to list in UI
     ui.addBookToList(book);
     
+    //Add to LS
+    //We use the actual className, because its a static method
+    Store.addBook(book);
+
     //Show success
     ui.showAlert('Book Added!', 'success')
 
@@ -94,13 +153,16 @@ document.getElementById('book-form').addEventListener('submit',function(e){
     e.preventDefault();
 });
 
-//Event listener for delete
+//Event listener for deleting
 document.getElementById('book-list').addEventListener('click',function(e){
     //Instantiate the UI (In order to use its prototype methods)
     const ui=new UI();
 
     //Delete book
     ui.deleteBook(e.target);
+
+    //Remove from LS, argument is isbn
+    Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
 
     //Show alert
     ui.showAlert('Book removed!', 'success');
