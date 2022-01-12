@@ -21,11 +21,13 @@ searchUser.addEventListener('keyup',(e)=>{
             }else{
                 //Show profile
                 ui.showProfile(data.profile);
+                ui.showRepos(data.repos);
             }
       })
     } else {
     // Clear profile
     ui.clearProfile();
+    
     }
     
 });
