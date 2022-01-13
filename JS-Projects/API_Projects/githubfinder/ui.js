@@ -3,7 +3,7 @@ class UI{
         this.profile=document.getElementById('profile');
     }
 
-    //Display profile in UI
+//Display profile in UI
 //mg-fluid makes it 100% of its container
 //_blank makes it open on a new tab
 
