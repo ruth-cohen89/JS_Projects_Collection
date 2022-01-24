@@ -1,9 +1,9 @@
 {
   "posts": [
     {
-      "id": 1,
-      "title": "Post One",
-      "body": "This is post one"
+      "title": "Post 1",
+      "body": "This is post one",
+      "id": 1
     },
     {
       "id": 2,
@@ -23,11 +23,6 @@
     {
       "title": "sexy",
       "body": "nana",
-      "id": 5
-    },
-    {
-      "title": "sexy",
-      "body": "nana",
       "id": 6
     },
     {
@@ -36,29 +31,14 @@
       "id": 7
     },
     {
-      "title": "dd",
-      "body": "d",
-      "id": 8
-    },
-    {
-      "title": "ff",
-      "body": "ff",
-      "id": 9
-    },
-    {
       "title": "kk",
       "body": "kk",
       "id": 10
     },
     {
-      "title": "kk",
-      "body": "kk",
+      "title": "Post One",
+      "body": "This is post one",
       "id": 11
-    },
-    {
-      "title": "k",
-      "body": "l",
-      "id": 12
     }
   ]
 }
