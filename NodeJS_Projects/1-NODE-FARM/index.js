@@ -1,43 +1,62 @@
-const fs=require('fs');
 //fs is the object with all fs module functionality
-const http=require('http');
+const fs=require('fs');
 //http pack gives us networking capabilities, 
 //such as an http server
-const url = require('url');
+const http=require('http');
 //For routing 
-
-////////////////////////////////////////////////////////
-//SERVER 
-
-//Each time a new request hits our server,
-//this callback function will get called.
+const url = require('url');
+const replaceTemplate=require('./modules/replaceTemplate');
 
 //This is a top level code, executed only once 
 //we start the program. thats why we make it syncronous.
 //Unlike callbacks in res that are repeated, so it should be async in order not
 //to block the rest of the users.
+//Read JSON data 
 const data=fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 //parse JSON (string) to JS object
-const dataObject=JSON.parse(data);
+const dataObj=JSON.parse(data);
+//Read overview template
+const tempOverview=fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8');
+//Read card template
+const tempCard=fs.readFileSync(`${__dirname}/templates/template-card.html`, 'utf-8');
+//Read product template
+const tempProduct=fs.readFileSync(`${__dirname}/templates/template-product.html`, 'utf-8');
 
+
+//Each time a new request hits our server,
+//the callback function will get called
 const server=http.createServer((req,res)=>{
-    const pathName=req.url;
+    
+    
+    const {query, pathname}=url.parse(req.url, true);
 
     // Overview page
-    if(pathName==='/'||pathName==='/overview'){
-        res.end('Thats the overview!');
+    if(pathname==='/'||pathname==='/overview'){
+        res.writeHead(200, {'Content-type': 'text/html'});
+
+        //map returns an array of results 
+        const cardsHtml=dataObj.map(el=> replaceTemplate(tempCard,el)).join();
+        //put this data in the page
+        const output=tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
+        
+        res.end(output);
 
     // Product page
-    } else if(pathName==='/product'){
-        res.end('Thats the product!');
+    } else if(pathname==='/product'){
+        res.writeHead(200, {'Content-type': 'text/html'});
+        const product=dataObj[query.id];
+        const output=replaceTemplate(tempProduct,product);
 
-    // API
-    } else if(pathName==='/api'){
-        
+        res.end(output);
+
+    // API (fake)
+    } else if(pathname==='/api'){ 
       res.writeHead(200, {'Content-type': 'application/json'});
-      res.end(data);
+      res.end(dataObject);
     }
-    else { //Any other req
+
+    // Not found
+    else { 
       res.writeHead(404,{
         'Content-type': 'text/html',
         'my-header':'hi strong' 
