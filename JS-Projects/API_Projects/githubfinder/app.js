@@ -1,34 +1,14 @@
-//Init gitHub
-const gitHub=new GitHub;
-//Init ui
-const ui=new UI;
+// //Init gitHub
+// const gitHub=new GitHub;
+// //Init ui
+// const ui=new UI;
 
-//search input
-const searchUser=document.getElementById('searchUser');
-
-//search input event listener
-searchUser.addEventListener('keyup',(e)=>{
-    //Get input text
-    const userText=e.target.value;
-  
-    if(userText.text!==''){
-        //Make http calls
-        gitHub.getUser(userText)
-        .then(data=>{
-            if(data.profile.message==='Not Found'){
-                //Show alert
-                ui.showAlert('user not found', 'alert alert-danger')
-            }else{
-                //Show profile
-                ui.showProfile(data.profile);
-                ui.showRepos(data.repos);
-            }
-      })
-    } else {
-    // Clear profile
-    ui.clearProfile();
-    
+function* generator(array){
+    for(let i=0; i<array.length; i++){
+yield array[i]
     }
-    
-});
+}
 
+const genObject= generator([1,2,3]);
+console.log(genObject.next());	//{value: 1, done: false}
+console.log(genObject.next());

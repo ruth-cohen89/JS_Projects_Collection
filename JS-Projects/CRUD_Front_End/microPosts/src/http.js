@@ -10,10 +10,11 @@
 
  class EasyHTTP {
   // Make an HTTP GET Request 
+  //Fetch data from an API as json
   async get(url) {
     const response = await fetch(url);
     const resData = await response.json();
-    return resData;
+    return resData;//return as a promise
   }
 
   // Make an HTTP POST Request
