@@ -1,7 +1,11 @@
 const fs=require('fs');
 const superagent=require('superagent');
 
-/////Promises
+////In this project we ask some API to give us some data 
+//from a remote server, here, we dont build the API , we use it
+//that API has an access to the remote server, we don't
+
+///Promises
 
 //get automaticaly returns a promise, 
 //but readFile doesnt so we have to configure it
