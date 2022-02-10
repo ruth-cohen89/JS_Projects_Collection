@@ -1,4 +1,6 @@
 //File related to express
+//Create an express app, (which starts as a server)
+//Then, configure middlewares in the app, using the app methods
 const express = require('express');
 //third party middleware
 const morgan = require('morgan');
@@ -7,6 +9,7 @@ const morgan = require('morgan');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
+//Create Express application
 const app = express();
 
 // 1) MIDDLEWARES
@@ -14,7 +17,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-//express.json is a the body of arequest (built-in in express)
+//express.json is the body of the request (built-in in express)
 //now we have access to the request body (from the next middlewares)
 app.use(express.json());
 //Middleware to serve static files in the browser
@@ -32,7 +35,7 @@ app.use((req, res, next) => {
 });
 
 // 3) ROUTES
-//Mounting the routers
+//Mounting the routers (adding them to the MW stack)
 //When the request hits the matching route
 //then it will run the matching router middleware in the ms
 app.use('/api/v1/tours', tourRouter);

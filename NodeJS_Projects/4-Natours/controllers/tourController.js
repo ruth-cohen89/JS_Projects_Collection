@@ -13,10 +13,11 @@ exports.checkID = (req, res, next, val) => {
       message: 'Invalid ID🥲',
     });
   }
+  //Go to next mw determined by tourRoutes
   next();
 };
 
-//CheckBody middleware
+//CheckBody middleware, when creating a new tour
 exports.checkBody = (req, res, next) => {
   if (!req.body.name || !req.body.price) {
     return res.status(400).json({
@@ -50,7 +51,6 @@ exports.getTour = (req, res) => {
   });
 };
 exports.createTour = (req, res) => {
-  //console.log(req.body);
   console.log(req.body);
   const newId = tours[tours.length - 1].id + 1;
   //New variable in order not to change the original
@@ -73,23 +73,18 @@ exports.createTour = (req, res) => {
     }
   );
 };
-    
-    
-    //Demo
-    exports.updateTour=(req,res)=>{
-  
-      res.status(200).json({
-       status: 'success',
-       data: { 
-         tour: '<updated tour here...>'
-       }
-  })
-  }
-  exports.deleteTour=(req,res)=>{
-  
-      res.status(204).json({
-       status: 'success',
-       data: null
-      });
-  }
-
+//Demo
+exports.updateTour = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: '<updated tour here...>',
+    },
+  });
+};
+exports.deleteTour = (req, res) => {
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+};
