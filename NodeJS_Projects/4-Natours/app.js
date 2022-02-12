@@ -1,6 +1,6 @@
 //File related to express
-//Create an express app, (which starts as a server)
-//Then, configure middlewares in the app, using the app methods
+//Create an express app, which is a series of middlewares
+//it automatically has a server inside
 const express = require('express');
 //third party middleware
 const morgan = require('morgan');
@@ -24,7 +24,8 @@ app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
-  console.log('Hello from the middleware🥰');
+  //console.log('Hello from the middleware🥰');
+  //console.log(req.params);
   next();
 });
 

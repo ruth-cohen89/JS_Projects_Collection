@@ -9,13 +9,13 @@ const router = express.Router();
 //Routing to the next middleware
 
 //If URL contains id parameter, then use checkID MW
-router.param('id', tourController.checkID);
+//router.param('id', tourController.checkID);
 
 //Now, determine the next middleWare
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.checkBody, tourController.createTour);
+  .post(tourController.createTour);
 
 router
   .route('/:id')
