@@ -1,13 +1,31 @@
-//File related to the app
 //Starter file
+//here we do the setup application related to the app
+//env var, importing express, start the server, and connect to DB
+const mongoose = require('mongoose');
+//we want to access the environment variables and assign password
+//we will be bale to connect to the DB
 const dotenv = require('dotenv');
-//Config env vars, before reading app module
-dotenv.config({ path: './config.env' });
 
 //Require app, which startes the server
 const app = require('./app');
 
-//console.log(process.env);
+//Config env vars, (before reading app module?)
+dotenv.config({ path: './config.env' });
+
+//assign the password
+const DB = process.env.DATABASE.replace(
+  '<PASSWORD>',
+  process.env.DATABASE_PASSWORD
+);
+
+//Conect to mongoDB through mongoose
+mongoose
+  .connect(DB, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  })
+  .then(() => console.log('You are connected to the DB 😺'));
 
 const port = process.env.PORT || 3000;
 
