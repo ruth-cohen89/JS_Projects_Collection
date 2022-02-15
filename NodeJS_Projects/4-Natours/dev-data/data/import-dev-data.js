@@ -1,10 +1,14 @@
+//A script to import data from the files to the DB
+//or to delete data from the DB
+//This script runs independently, and only at the begining (for importing)
+//We run this script from the console
 const fs = require('fs');
-//This script runs independently, and only at the begining
 const mongoose = require('mongoose');
 
 const dotenv = require('dotenv');
 
 const Tour = require('../../models/tourModel');
+
 //Config env vars, before reading app module
 dotenv.config({ path: './config.env' });
 

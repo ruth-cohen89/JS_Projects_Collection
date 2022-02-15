@@ -6,11 +6,13 @@ const mongoose = require('mongoose');
 //we will be bale to connect to the DB
 const dotenv = require('dotenv');
 
-//Require app, which startes the server
-const app = require('./app');
-
-//Config env vars, (before reading app module?)
+//Config env vars, before reading app module
+//so the app will get access to them
+//( In 1 of its mw it checks if we are on development...)
 dotenv.config({ path: './config.env' });
+
+//Require app, which starts the server
+const app = require('./app');
 
 //assign the password
 const DB = process.env.DATABASE.replace(
