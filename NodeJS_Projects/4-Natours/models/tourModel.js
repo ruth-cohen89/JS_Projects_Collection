@@ -2,20 +2,24 @@
 //and also on update, (beacuse we defined them to on updateTour func)
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const validator = require('validator');
+//const validator = require('validator');
 //The role of the schema is to describe the data,
 //set default vaules, validate etc...
-//args: schema definition, object for the schema object
+//here we can define some validators on the data
+//which will be caught by the catchAsync class,
+//and will be handled in errorController
+//args: schema definition, object for schema options
 const tourSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      //Validator
       required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
       //These 2 validators are avilabe only on strings
       maxLength: [40, 'A tour name must have less or equal to 40 characters'],
-      minLength: [10, 'A tour name must have more or equal to 40 characters'],
+      minLength: [10, 'A tour name must have more or equal to 10 characters'],
       // validate: [validator.isAlpha, 'Tour name must only contain characters'],
     },
     slug: String,
@@ -60,7 +64,7 @@ const tourSchema = new mongoose.Schema(
           //In a validator function 'this' keyword points to the current doc
           //on NEW document creation (but not in 'update' func, in such case it will point to the node object)
           //So, this function works only for posting a new doc
-          console.log(this);
+          //console.log(this);
           return val < this.price; //return true if priceDiscount is less than the price
         },
         message: 'Discount price ({VALUE}) should be below the regular price',
@@ -94,28 +98,36 @@ const tourSchema = new mongoose.Schema(
   },
   {
     //Each time that the data is actually ouputted as JSON/object
-    // the virtuals are part of output
+    // the virtuals will be part of the output
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
-//durationWeeks will ve created each time we get something from the DB
+
+//VIRTUAL: virtual properties are not persistent in the the DB
+//but calculated when needed
+//We can't use a virtual prperty in query (like: =1, no!)
+//Create a virtual property: durationWeeks
+//It will not be persisted in the DB, but will be calculated only when we get the data
+//It will be created each time we get something from the DB
+//this refers to current doc (also an object of the schema)
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
-// DOCUMENT MIDDLEWARE: runs before .save() a nd .create() (not on update)
+//mongoose has its own mw stack, which differs frim the app mw
+// DOCUMENT MIDDLEWARE: runs before .save() and .create() (not on update)
 //this refers to the document
 //Define a slug field before creating a new doc
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
-  console.log(this);
+  //console.log(this);
   next();
 });
 
 // QUERY MIDDLEWARE: executes for all functions starting with find
 //this refers to the query
-//this one is executed right before find is the query made by .find() is executed
+//this one is executed right before the query made by .find() is executed
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
 
@@ -123,19 +135,21 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-//runs after the query executed,
+//Runs after the query executed,
 //Has an access to the returned docs
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took: ${Date.now() - this.start} millisecs`);
-  //console.log(docs);
+  console.log('doc mw!');
   next();
 });
 
 // AGGREGATION MIDDLEWARE
+//Runs before an aggregation executes
 tourSchema.pre('aggregate', function (next) {
   //Add at the beginning of the pipeline array another stage
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   console.log(this.pipeline());
+  console.log('aggregation mw!');
   next();
 });
 

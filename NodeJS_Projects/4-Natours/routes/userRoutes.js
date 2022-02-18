@@ -1,10 +1,16 @@
 const express = require('express');
 
 const userController = require('../controllers/userController');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-//Users resource
+router.post('/signup', authController.signup);
+router.post('/login', authController.login);
+
+//REST Arc implemented here:
+//the name of the URL has nothing to do with the action
+//that is actually performed, unlike the .post('/signup') above...
 router
   .route('/')
   .get(userController.getAllUsers)
