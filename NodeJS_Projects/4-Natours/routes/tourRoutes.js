@@ -8,10 +8,7 @@ const router = express.Router();
 
 //Routing to the next middleware
 
-//If URL contains id parameter, then use checkID MW
-//router.param('id', tourController.checkID);
-
-//Now, determine the next middleWare
+//Aliasing
 router
   .route('/top-5-cheap')
   .get(tourController.aliasTopTours, tourController.getAllTours);
@@ -24,6 +21,9 @@ router
   .get(tourController.getAllTours)
   .post(tourController.createTour);
 
+//If URL contains id parameter,
+//Mongoose will try to find the tour with the id,
+//if not found, it will throw an error
 router
   .route('/:id')
   .get(tourController.getTour)
