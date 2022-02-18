@@ -1,3 +1,5 @@
+//promisify function
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
@@ -67,9 +69,17 @@ exports.protect = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.autorization.split(' ')[1];
   }
-  console.log(token);
-  // 2) Verification token
 
+  if (!token) {
+    return next(
+      new AppError('You are not logged in! Please log in to get access.', 401)
+    );
+  }
+  // 2) Verification token (if payload hasn't change & token ahsnt expired)
+  //this functions 3rd arg should be a callback, but we want to work with promises!
+  //so we make it return a promise instead, by using promisify
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  console.log(decoded);
   // 3) Check if user still exists
 
   // 4) Check if user changed password after the token was issued
