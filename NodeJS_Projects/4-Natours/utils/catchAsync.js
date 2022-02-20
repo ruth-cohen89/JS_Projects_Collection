@@ -1,4 +1,4 @@
-//A wrapper, function to catch asynchronous errors
+//A wrapper, function to catch asynchronous errors, (when promise is rejected in await)
 //Asyn functions return promises,
 //so When there is an error inside of an async function then the promise is rejected
 //an error is thrown when the requested resource (tour) is not found

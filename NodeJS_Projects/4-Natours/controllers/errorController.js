@@ -23,6 +23,12 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleJWTError = () =>
+  new AppError('Invalid token. Please log in again!', 401);
+
+const handleJWTExpiredError = () =>
+  new AppError('Your token has expired! please log in again.', 401);
+
 //Handle development errors
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -35,8 +41,7 @@ const sendErrorDev = (err, res) => {
 
 //Handle production errors
 const sendErrorProd = (err, res) => {
-  //Operational errors, trusted: send message to the client,
-  //because the user can understand them...
+  //Operational errors, trusted: send message to the client, (the user can understand them)
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
@@ -72,19 +77,25 @@ module.exports = (err, req, res, next) => {
     let error = Object.assign(err);
     //console.log(error, 'done')
 
-    //remember, dont use {...} dest!
+    //Here, we take async errors that were thrown (created by external, like mongoose server or jwt)
+    //And mark them as operational by creating an error for each by the appError class
     //Marking errors as operational:
     //handle mongoose errors
-    //if mongoose threw a casting error, now we will
-    //create an appError so it will be marked as "operational"
+    //if mongoose threw a casting error
     if (error.name === 'CastError') error = handleCastErrorDB(error);
 
-    //If inserted an existed name when posting
+    //If inserted an existed name when posting, also error by mongoose
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
 
     //Validation error created by mongoose schema
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
+
+    //Error by JWT, id changed
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
+    //Error by JWT, token expired
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
+
     sendErrorProd(error, res);
   }
 };
