@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 //For creating custom validators
 const validator = require('validator');
@@ -7,7 +8,7 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please tell us your name!']
+    required: [true, 'Please tell us your name!'],
     // maxLength
     // minLength
   },
@@ -16,7 +17,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Please provide your email'],
     unique: true,
     lowerCase: true,
-    validate: [validator.isEmail, 'Please provide a valid email']
+    validate: [validator.isEmail, 'Please provide a valid email'],
   },
   //The path to the photo in our fs
   photo: String,
@@ -46,12 +47,15 @@ const userSchema = new mongoose.Schema({
   },
   //This field exists only if password has been changed
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
+// DOCUMENT MIDDLEWARES
 //Encrypt password between getting the data and saving it to the DB
 userSchema.pre('save', async function (next) {
   //Only run this function if password was actually modified
-  //If the user implemented update but modified another property
+  //Because maybe the user implemented update but modified another property
   if (!this.isModified('password')) return next();
 
   //Hash the password with cost of 12
@@ -64,8 +68,20 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+//Before saving, update passwordChangedAt property
+userSchema.pre('save', function (next) {
+  //if password hasnt changed just now/the doc is new,
+  if (!this.isModified('password') || this.isNew) return next();
+  // console.log('Password changed');
+  // console.log(Date.now());
+  //Sometimes the new token is created a bit before passwordChangetAt is created,
+  //so we subscrapt 1 second before saving, now the password will always change before the token is created
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
 
-//THese 2 functions are related to the data, thats why they are in the model here
+// INSTANCE METHODS
+//These 2 functions are related to the data, thats why they are in the model here
 //This instace method can be access by all users, its a model method
 //In an instance method, this points to the current document (which is called from)
 //Authinticationg a given password, boolean
@@ -77,6 +93,7 @@ userSchema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
+//Checks if password changed after the token was issued
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   //If password changed
   if (this.passwordChangedAt) {
@@ -89,6 +106,22 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     return JWTTimestamp < changedTimeStamp;
   } //else. not changed
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  //this reset token isnt created with jwt, but with crypto
+  //so we need to store it in db, so we will be able to compare after...
+  //we never store a raw token in the db, because if someone breaks it, he may get this token
+  //so store as encrypted, but not as strong as the passowrd, so use the built it crypto only
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  //for 10 min in ms
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);
