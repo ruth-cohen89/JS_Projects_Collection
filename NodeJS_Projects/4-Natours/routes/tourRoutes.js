@@ -17,6 +17,7 @@ router
 router.route('/tour-stats').get(tourController.getTourStats);
 router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
+//CRUD operations on tours
 router
   .route('/')
   .get(authController.protect, tourController.getAllTours)
