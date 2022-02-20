@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
   },
   //The path to the photo in our fs
   photo: String,
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
@@ -39,6 +44,8 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not the same!',
     },
   },
+  //This field exists only if password has been changed
+  passwordChangedAt: Date,
 });
 
 //Encrypt password between getting the data and saving it to the DB
@@ -58,7 +65,9 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+//THese 2 functions are related to the data, thats why they are in the model here
 //This instace method can be access by all users, its a model method
+//In an instance method, this points to the current document (which is called from)
 //Authinticationg a given password, boolean
 userSchema.methods.correctPassword = async function (
   candidatePassword,
@@ -66,6 +75,20 @@ userSchema.methods.correctPassword = async function (
 ) {
   //Since bcrypt doesnt use salt, the result of bcrypting the same string will always be the same..?
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  //If password changed
+  if (this.passwordChangedAt) {
+    const changedTimeStamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    //console.log(changedTimeStamp, JWTTimestamp);
+    //true - the token was issued before password changed, false - the opposite
+    return JWTTimestamp < changedTimeStamp;
+  } //else. not changed
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);
