@@ -49,6 +49,13 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  //If user is active
+  active: {
+    type: Boolean,
+    default: true,
+    //dont show to user
+    select: false,
+  },
 });
 
 // DOCUMENT MIDDLEWARES
@@ -77,6 +84,15 @@ userSchema.pre('save', function (next) {
   //Sometimes the new token is created a bit before passwordChangetAt is created,
   //so we subscrapt 1 second before saving, now the password will always change before the token is created
   this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+// QUERY mw
+//thiz points to current query
+//All queries starting with find
+userSchema.pre(/^find/, function (next) {
+  //Find - display only active users
+  this.find({ active: { $ne: false } });
   next();
 });
 
