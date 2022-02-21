@@ -7,17 +7,34 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 
-//Create token, if user wants some data from the server
-//(like getting tours/changing password) he needs to be identified with his token
+//Create token and return
 const signToken = (id) =>
   //(payload, key, header options)
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
+//Create token and return in the response
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
-  //By sending the token the user will be logged in
+
+  const cookieOptions = {
+    //converting days to ms
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    //Don't let the browser modify/access the cookie
+    //Preventing cross-site-scripting attacks - the attacker may reach LS of the browser
+    httpOnly: true,
+  };
+  // In production the cookie will be sent only on a secure connection(https)
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  // SEND COOKIE
+  //Create cookie and data (token) we want to send in the cookie
+  res.cookie('jwt', token, cookieOptions);
+
+  //SEND RESOPNSE(body)
   res.status(statusCode).json({
     status: 'success',
     token,
@@ -33,9 +50,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    passwordChangedAt: req.body.passwordChangedAt,
-    role: req.body.role,
   });
+
   createSendToken(newUser, 201, res);
 });
 
@@ -111,6 +127,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
 //retrict route to specified users only
 //A wrapper that takes in the args and returns the mw to execute now
 //which will have access to roles because of the closure

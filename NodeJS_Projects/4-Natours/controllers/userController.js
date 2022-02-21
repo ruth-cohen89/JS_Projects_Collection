@@ -25,6 +25,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
+// UPDATE user
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
@@ -41,7 +42,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Filtered out unwanted fields that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name', 'email');
-  
+
   // 3) Update user document
   //new: true - return the updated object, instead of the old one
   // in options, we don't specify the body, but the filterd fields,
@@ -56,6 +57,16 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     data: {
       updatedUser,
     },
+  });
+});
+
+// DELETE - diactivate user
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
+    //204 - deleted
+    status: 'success',
+    data: null,
   });
 });
 
