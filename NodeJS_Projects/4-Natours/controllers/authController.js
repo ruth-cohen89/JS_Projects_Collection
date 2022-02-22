@@ -6,7 +6,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
-
+//In production we use https in order to hide the token (encrypting request and response)
 //Create token and return
 const signToken = (id) =>
   //(payload, key, header options)
@@ -27,13 +27,19 @@ const createSendToken = (user, statusCode, res) => {
     //Preventing cross-site-scripting attacks - the attacker may reach LS of the browser
     httpOnly: true,
   };
-  // In production the cookie will be sent only on a secure connection(https)
+  // In production the cookie will be sent only on https
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
   // SEND COOKIE
-  //Create cookie and data (token) we want to send in the cookie
+  //Create cookie named jwt and data (token) we want to send in the cookie
   res.cookie('jwt', token, cookieOptions);
 
+  //All properties of a document that are selected as false
+  //won't be displayed when the user asks to see the user document
+  //but when creating a new doc (user) all assined fields are returned and seen
+  //so in order to hide the password in the response, we do this:
+  //Remove the password from the output
+  user.password = undefined;
   //SEND RESOPNSE(body)
   res.status(statusCode).json({
     status: 'success',
@@ -50,6 +56,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    role: req.body.role,
   });
 
   createSendToken(newUser, 201, res);
