@@ -27,8 +27,9 @@ class APIFeatures {
   sort() {
     if (this.queryString.sort) {
       //convert comma to whitespace
+      console.log(this.queryString.sort);
       const sortBy = this.queryString.sort.split(',').join(' ');
-
+      console.log(sortBy);
       this.query = this.query.sort(sortBy);
     } else {
       //sort by 'createdAt' in a descending order

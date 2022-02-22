@@ -4,6 +4,14 @@
 const express = require('express');
 //third party middleware
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+//secure http headers
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+//Agains parameter pollution
+const hpp = require('hpp');
+
 //Operational error class
 const AppError = require('./utils/appError');
 //Error controller
@@ -16,22 +24,71 @@ const userRouter = require('./routes/userRoutes');
 //Create Express application
 const app = express();
 
-// MIDDLEWARES
-//If we are on development, print logging by morgan mw
+// 1) GLOBAL MIDDLEWARES - will be called for every request.
+//Set seurity HTTP headers
+//helmet() returns a mw, that will be called when there is a req
+app.use(helmet());
+
+//Development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+//Limit requests from same API
+//MW that defines max number of reqs per IP in a certain amount of time
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+//All routes that satrt with api
+app.use('/api', limiter);
+
+// Body parser, reading data from the body into req.body
 //express.json is the body of the request (built-in mw)
 //now we have access to the request body (from the next middlewares)
-app.use(express.json());
-//Middleware to serve static files in the browser
+app.use(express.json({ limit: '10kb' }));
+
+// Serving static files in the browser
 app.use(express.static(`${__dirname}/public`));
 
-//Finds out when the request happened, saving it in the req obj
+// Data sanitization against NoQsql query injection (sql pollution)
+//Returns a mw to use, otherwise
+//This mw looks at the req body, querystring and params
+// and filters out all '$' and '.'
+app.use(mongoSanitize());
+
+// mongo's validation is great against this xss
+
+// Data santiziation agains XSS (html pollution)
+// By converting the html symbols
+// Cleans user input from malicious html code
+//An attacker can insert malicious html code with some js code attached to it
+//It could be injected to the html site and create damage
+app.use(xss());
+
+// Prevent parameter pollution (clean the query string from duplicates) 
+// so we protect from error
+// If the query is (?sort=duration&sort=price) then it will sort only by the last one, which is priceDiscount
+// We specify whitelist - an array of properties which we allow dupliate in query string
+// (duration=5&duration=9) will return both durations 5 and 9 and not only 9..
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  })
+);
+
+// Test middleware, finds out when the request happened
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  console.log(req.headers);
+  //console.log(req.headers);
   next();
 });
 
