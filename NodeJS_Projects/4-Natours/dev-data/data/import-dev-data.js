@@ -30,7 +30,7 @@ mongoose
 //READ JSON FILES
 const tours = JSON.parse(
   // eslint-disable-next-line no-template-curly-in-string
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
+  fs.readFileSync(`${__dirname}/tours.json`, 'utf-8')
 );
 
 //IMPORT DATA INTO DB
@@ -64,4 +64,4 @@ if (process.argv[2] === '--import') {
 } else if (process.argv[2] === '--delete') {
   deleteData();
 }
-console.log(process.argv);
+//console.log(process.argv);
