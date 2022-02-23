@@ -22,14 +22,15 @@ exports.aliasTopTours = (req, res, next) => {
 
 exports.getAllTours = catchAsync(async (req, res, next) => {
   // EXECUTE QUERY
-  //Passing a query object and the query string, and chaining
+  //Passing a query object and the query string, and chaining feats
   const features = new APIFeatures(Tour.find(), req.query)
     .filter()
     .sort()
     .limitFields()
     .paginate();
+    //console.log(Tour.find())
   const tours = await features.query;
-
+  //console.log(tours)
   //SEND RESPONSE
   res.status(200).json({
     status: 'success',
@@ -39,8 +40,13 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     },
   });
 });
+//
 exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id);
+  //populate fills up the referenced field to the docs data from another collection
+  const tour = await Tour.findById(req.params.id).populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
   // Tour.findOne({_id: req.params.id})
   //In case that the ID is almost valid except one char then
   //mongoose will not throw an error of unfound, but will return null,
@@ -61,14 +67,13 @@ exports.createTour = catchAsync(async (req, res, next) => {
   //validators of schema run automatically when calling .create()
   //mongoose throw errors of schema, so we dont need to create ones
   const newTour = await Tour.create(req.body);
+
   res.status(201).json({
     status: 'success',
     data: {
       tour: newTour,
     },
   });
-  // try {
-  // } catch (err) {
 });
 
 exports.updateTour = catchAsync(async (req, res, next) => {

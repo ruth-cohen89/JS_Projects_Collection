@@ -2,6 +2,7 @@
 //and also on update, (beacuse we defined them to on updateTour func)
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+//const User = require('./userModel');
 //const validator = require('validator');
 //The role of the schema is to describe the data,
 //set default vaules, validate etc...
@@ -92,20 +93,60 @@ const tourSchema = new mongoose.Schema(
     },
     startDates: [Date],
     secretTour: {
+      //schema type options
       type: Boolean,
       default: false,
     },
+    startLocations: {
+      // GeoJSON, nested-embedded objects, with schema options
+      //Mulitple geometries, default Point
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      //an array of points. latitude, longitude
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    //embedded docs in tour doc
+    locations: [
+      {
+        type: {
+          type: String,
+          address: String,
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    //(Embedded User way
+    //guides: Array)
+
+    //childRef - the guides belong to the tour
+    guides: [
+      {
+        //mongodb id
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
+
   {
     //Each time that the data is actually ouputted as JSON/object
-    // the virtuals will be part of the output
+    // the virtuals(fields which are not stored in the DB) will be part of the output
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
 
 //VIRTUAL: virtual properties are not persistent in the the DB
-//but calculated when needed
+//but calculated when needed!
 //We can't use a virtual prperty in query (like: =1, no!)
 //Create a virtual property: durationWeeks
 //It will not be persisted in the DB, but will be calculated only when we get the data
@@ -114,8 +155,8 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
-
 //mongoose has its own mw stack, which differs frim the app mw
+
 // DOCUMENT MIDDLEWARE: runs before .save() and .create() (not on update)
 //this refers to the document
 //Define a slug field before creating a new doc
@@ -126,8 +167,9 @@ tourSchema.pre('save', function (next) {
 });
 
 // QUERY MIDDLEWARE: executes for all functions starting with find
-//this refers to the query
-//this one is executed right before the query made by .find() is executed
+//this refers to the current query
+//this one is executed right before
+//the query made by .find()/findById() is executed(in getTour/Tours/updateTour)
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
 
@@ -135,16 +177,26 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
+//populate fills up the referenced field to the docs data from another collection
+//without the v and passwordChangedAt fields
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+  next();
+});
+
 //Runs after the query executed,
 //Has an access to the returned docs
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took: ${Date.now() - this.start} millisecs`);
-  console.log('doc mw!');
   next();
 });
 
 // AGGREGATION MIDDLEWARE
 //Runs before an aggregation executes
+//Making sure that secretTours won't be displayed to the user
 tourSchema.pre('aggregate', function (next) {
   //Add at the beginning of the pipeline array another stage
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
@@ -157,3 +209,15 @@ tourSchema.pre('aggregate', function (next) {
 //An instance of a model is called a document.
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;
+
+//Converting the user ID's that the user inserts into the user objects
+//(creating embedded user docs inside the tour for creating a new tour)
+//We won't use it, because users are often updated...
+// tourSchema.pre('save', async function (next) {
+//   //.map() returns an array of promises
+//   //console.log(this.guides.map(async (id) => await User.findById(id)));
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   //console.log(this.guides)
+//   next();
+// });
