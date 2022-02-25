@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
-const reviewSchema = new mongoose.Schema({
-  review: {
-    type: String,
-    required: [true, 'Review can not be empty!'],
+const reviewSchema = new mongoose.Schema(
+  {
+    review: {
+      type: String,
+      required: [true, 'Review can not be empty!'],
     },
     rating: {
       type: Number,
@@ -27,7 +28,6 @@ const reviewSchema = new mongoose.Schema({
       ref: 'User',
       required: [true, 'Review must belong to a user'],
     },
-
   },
   {
     //Each time that the data is actually ouputted as JSON/object
@@ -37,6 +37,24 @@ const reviewSchema = new mongoose.Schema({
   }
 );
 
+// QUERY MIDDLEWARE
+//populate the user and the tour when displaying review to the user
+reviewSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: 'tour',
+//     //not leaking private data, but the name
+//     select: 'name',
+//   });
+  this.populate({
+    path: 'user',
+    //same
+    select: 'name photo',
+  });
+
+  next();
+});
 const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
+
+// POST /tour/234grf7/reviews

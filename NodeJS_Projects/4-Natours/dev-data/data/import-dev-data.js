@@ -7,7 +7,9 @@ const mongoose = require('mongoose');
 
 const dotenv = require('dotenv');
 
-const Tour = require('../../models/tourModel');
+// httpsconst Tour = require('../../models/tourModel');
+
+const Review = require('../../models/reviewModel');
 
 //Config env vars, before reading app module
 dotenv.config({ path: './config.env' });
@@ -25,19 +27,19 @@ mongoose
     useCreateIndex: true,
     useFindAndModify: false,
   })
-  .then(() => console.log('You are connected to the DB 😺'));
+  .then(() => console.log('You are connected to the DB 🕴️'));
 
-//READ JSON FILES
-const tours = JSON.parse(
+//READ DATA FROM FILE
+const reviews = JSON.parse(
   // eslint-disable-next-line no-template-curly-in-string
-  fs.readFileSync(`${__dirname}/tours.json`, 'utf-8')
+  fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
 );
 
 //IMPORT DATA INTO DB
 const importData = async () => {
   try {
-    //Pass in array, for each a new doc is created
-    await Tour.create(tours);
+    //create it in the model
+    await Review.create(reviews);
     console.log('Data successfuly loaded');
   } catch (err) {
     console.log(err);
@@ -49,7 +51,7 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     //Pass in array, for each a new doc is created
-    await Tour.deleteMany();
+    await Review.deleteMany();
     console.log('Data successfuly deleted');
   } catch (err) {
     console.log(err);
@@ -58,7 +60,7 @@ const deleteData = async () => {
 };
 
 //Run the right func according to what we specify in the terminal
-//In real time
+//On real time
 if (process.argv[2] === '--import') {
   importData();
 } else if (process.argv[2] === '--delete') {
