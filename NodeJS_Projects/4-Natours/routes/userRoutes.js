@@ -21,9 +21,10 @@ router.patch(
 //the name of the URL has nothing to do with the action
 //that is actually performed, unlike the .post('/signup') above...
 router.patch('/updateMe', authController.protect, userController.updateMe);
-//Delete - diactivate the sigend in user
+//Delete - user can diactivate himself
 router.delete('/deleteMe', authController.protect, userController.deleteMe);
 
+// POST users/
 router
   .route('/')
   .get(userController.getAllUsers)
@@ -33,6 +34,7 @@ router
   .route('/:id')
   .get(userController.getUser)
   .patch(userController.updateUser)
+  //Only admin can actually delete a user
   .delete(userController.deleteUser);
 
 module.exports = router;

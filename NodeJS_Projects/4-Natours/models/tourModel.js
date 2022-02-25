@@ -155,9 +155,31 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
+
+//review when user requests only one tour
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+// Virtual populate for reviews
+//In order not to do child ref for reviews, because
+//each can have a lot of reviews, we caculate it here 
+//and dont persist on LS
+// tourSchema.virtual('reviews', {
+//   ref: 'Review',
+//   //the field to other model where the ref
+//   //the current model is stored
+//   foreignField: 'tour',
+//   //where the id is stored in the current model
+//   //the _id, which is how it called in this model is called 'tour' in the foreign m
+//   localField: '_id',
+// });
+
 //mongoose has its own mw stack, which differs frim the app mw
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create() (not on update)
+
 //this refers to the document
 //Define a slug field before creating a new doc
 tourSchema.pre('save', function (next) {
@@ -167,6 +189,7 @@ tourSchema.pre('save', function (next) {
 });
 
 // QUERY MIDDLEWARE: executes for all functions starting with find
+
 //this refers to the current query
 //this one is executed right before
 //the query made by .find()/findById() is executed(in getTour/Tours/updateTour)
@@ -187,7 +210,7 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-//Runs after the query executed,
+//Runs after the query got executed,
 //Has an access to the returned docs
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took: ${Date.now() - this.start} millisecs`);

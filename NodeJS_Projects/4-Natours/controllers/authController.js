@@ -62,7 +62,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   createSendToken(newUser, 201, res);
 });
 
-//login
+//login - verify name and password and create a token
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -74,7 +74,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide email and password', 400));
   }
 
-  // 2) Check if the user exists && password is correct (authenicate)
+  // 2) Check if the user exists && password is correct
   //find by email and Select - return fields that by default are false(not displayed)
   const user = await User.findOne({ email }).select('+password');
 
@@ -85,7 +85,7 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-//Check if a user logged in and authenticate him
+//Authenticate the user by his token
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Get token and check if it's there
   let token;
@@ -135,6 +135,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+//implements authorization
 //retrict route to specified users only
 //A wrapper that takes in the args and returns the mw to execute now
 //which will have access to roles because of the closure

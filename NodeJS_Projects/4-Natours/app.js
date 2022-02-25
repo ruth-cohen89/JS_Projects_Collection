@@ -20,6 +20,7 @@ const globalErrorHandler = require('./controllers/errorController');
 //Import routers (also mw)
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 
 //Create Express application
 const app = express();
@@ -92,12 +93,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// ROUTES
-//Mounting middlewares (adding it to the MW stack with optional path)
+// ROUTES MOUNT ROUTERES
+//Mounting middlewares - routers (adding to MW stack with optional path)
 //When a new request hits the server,
 //then the matching router middleware will run from the mw stack
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 //Handles all the rest of routes
 //If the request wasn't sent back yet,

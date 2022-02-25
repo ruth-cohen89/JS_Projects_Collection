@@ -1,13 +1,17 @@
 //The router
 const express = require('express');
-
 //Requiring tour controller
 const tourController = require('../controllers/tourController');
+const authController = require('../controllers/authController');
+const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
-const authController = require('../controllers/authController');
 
-//Routing to the next middleware
+// POST /tours/234grf7/reviews
+// GET /tours/456jio/reviews
+
+//Nested route, router mounted
+router.use('/:tourId/reviews', reviewRouter);
 
 //Aliasing
 router

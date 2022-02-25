@@ -10,6 +10,7 @@ const APIFeatures = require('../utils/apiFeatures.js');
 const AppError = require('../utils/appError');
 //Catch async errors class
 const catchAsync = require('../utils/catchAsync');
+const factory = require('./handlerFactory');
 
 //Manipulating the query object (before reaching getAllTours)
 //by adding the right API Features
@@ -28,7 +29,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     .sort()
     .limitFields()
     .paginate();
-    //console.log(Tour.find())
+  //console.log(Tour.find())
   const tours = await features.query;
   //console.log(tours)
   //SEND RESPONSE
@@ -42,11 +43,8 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 });
 //
 exports.getTour = catchAsync(async (req, res, next) => {
-  //populate fills up the referenced field to the docs data from another collection
-  const tour = await Tour.findById(req.params.id).populate({
-    path: 'guides',
-    select: '-__v -passwordChangedAt',
-  });
+
+  const tour = await Tour.findById(req.params.id).populate('reviews');
   // Tour.findOne({_id: req.params.id})
   //In case that the ID is almost valid except one char then
   //mongoose will not throw an error of unfound, but will return null,
@@ -94,16 +92,19 @@ exports.updateTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
-});
+//We call factory.deleteOne() function and it
+//is returnes and sits here until it is called as soon as we hit the corresponding route
+exports.deleteTour = factory.deleteOne(Tour);
+// exports.deleteTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
+//   if (!tour) {
+//     return next(new AppError('No tour found with that ID', 404));
+//   }
+//   res.status(204).json({
+//     status: 'success',
+//     data: null,
+//   });
+// });
 
 //Displaying statistics for each level of diffculty of some tours
 exports.getTourStats = catchAsync(async (req, res, next) => {

@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 //Filtering chosen fields(allowedFields) in the body(obj)
 const filterObj = (obj, ...allowedFields) => {
@@ -25,7 +26,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-// UPDATE user
+// User updating himself
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
@@ -60,7 +61,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-// DELETE - diactivate user
+// DELETE - diactivate user, user can diactive himself
 exports.deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
   res.status(204).json({
@@ -76,21 +77,17 @@ exports.getUser = (req, res) => {
     message: 'This route is not yed defined!',
   });
 };
+
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
     message: 'This route is not yed defined!',
   });
 };
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yed defined!',
-  });
-};
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yed defined!',
-  });
-};
+
+// Do NOT update passwords with this!
+// they dont pass the 'save' middleware
+// updateUser, deleteUser is only for admin
+exports.updateUser = factory.updateOne(User);
+
+exports.deleteUser = factory.deleteOne(User);
