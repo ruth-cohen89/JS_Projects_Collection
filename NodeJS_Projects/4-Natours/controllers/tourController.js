@@ -5,7 +5,7 @@
 const Tour = require('../models/tourModel');
 //API features
 // eslint-disable-next-line import/extensions
-const APIFeatures = require('../utils/apiFeatures.js');
+
 //App Error class
 const AppError = require('../utils/appError');
 //Catch async errors class
@@ -21,90 +21,14 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  // EXECUTE QUERY
-  //Passing a query object and the query string, and chaining feats
-  const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  //console.log(Tour.find())
-  const tours = await features.query;
-  //console.log(tours)
-  //SEND RESPONSE
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
-//
-exports.getTour = catchAsync(async (req, res, next) => {
-
-  const tour = await Tour.findById(req.params.id).populate('reviews');
-  // Tour.findOne({_id: req.params.id})
-  //In case that the ID is almost valid except one char then
-  //mongoose will not throw an error of unfound, but will return null,
-  //but we want the user to know about it in production
-  //so, we create an error for that (predicting)
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
-
-exports.createTour = catchAsync(async (req, res, next) => {
-  //validators of schema run automatically when calling .create()
-  //mongoose throw errors of schema, so we dont need to create ones
-  const newTour = await Tour.create(req.body);
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-});
-
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    //run validators of schema again
-    runValidators: true,
-  });
-
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
-
+exports.getAllTours = factory.getAll(Tour);
+//also populating the path property (to the virtual field - reviews)
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
+exports.createTour = factory.createOne(Tour);
+exports.updateTour = factory.updateOne(Tour);
 //We call factory.deleteOne() function and it
 //is returnes and sits here until it is called as soon as we hit the corresponding route
 exports.deleteTour = factory.deleteOne(Tour);
-// exports.deleteTour = catchAsync(async (req, res, next) => {
-//   const tour = await Tour.findByIdAndDelete(req.params.id);
-//   if (!tour) {
-//     return next(new AppError('No tour found with that ID', 404));
-//   }
-//   res.status(204).json({
-//     status: 'success',
-//     data: null,
-//   });
-// });
 
 //Displaying statistics for each level of diffculty of some tours
 exports.getTourStats = catchAsync(async (req, res, next) => {
@@ -200,27 +124,3 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     },
   });
 });
-
-//Before mongoose we had to validate this staff ourselves:
-//Validate ID MW
-//exports.checkID = (req, res, next, val) => {
-// if (req.params.id * 1 > tours.length) {
-//   return res.status(404).json({
-//     status: 'fail',
-//     message: 'Invalid ID🥲',
-//   });
-// }
-//Go to next mw determined by tourRoutes
-//next();
-//};
-
-//CheckBody middleware, when creating a new tour
-// exports.checkBody = (req, res, next) => {
-//   if (!req.body.name || !req.body.price) {
-//     return res.status(400).json({
-//       status: 'fail',
-//       message: 'Missing name or price!',
-//     });
-//   }
-//   next();
-// }

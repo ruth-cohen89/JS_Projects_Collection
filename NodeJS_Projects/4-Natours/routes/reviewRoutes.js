@@ -7,6 +7,10 @@ const authController = require('../controllers/authController');
 //mergeParams enables access to parameters of the former router
 const router = express.Router({ mergeParams: true });
 
+// Only logged-in users can perform operations on reviews
+//protect gives the user id (req.user.id)
+router.use(authController.protect);
+
 // POST /tours/234grf7/reviews (redirected)
 // GET /tours/234grf7/reviews
 // POST /reviews
@@ -19,15 +23,23 @@ router
   //protect actually provides the user id,
   //so no need to specicy the user id in the req
   .post(
-    //protect gives the user id (req.user.id)
-    authController.protect,
+    //Only users can post a review
     authController.restrictTo('user'),
+    reviewController.setTourUserIds,
     reviewController.createReview
   );
 
 router
   .route('/:id')
-  .patch(reviewController.updateReview)
-  .delete(reviewController.deleteReview);
+  .get(reviewController.getReview)
+  // Guides & lead-guides are not allowed to change/delete a review
+  .patch(
+    authController.restrictTo('user', 'admin'),
+    reviewController.updateReview
+  )
+  .delete(
+    authController.restrictTo('user', 'admin'),
+    reviewController.deleteReview
+  );
 
 module.exports = router;

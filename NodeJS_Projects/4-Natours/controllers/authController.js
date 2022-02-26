@@ -6,6 +6,10 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
+
+// Protect implements authentication
+// RestrictTo implements authorization
+
 //In production we use https in order to hide the token (encrypting request and response)
 //Create token and return
 const signToken = (id) =>
