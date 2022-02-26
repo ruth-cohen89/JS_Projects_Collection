@@ -8,7 +8,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 // httpsconst Tour = require('../../models/tourModel');
-
+const Tour = require('../../models/tourModel');
+const User = require('../../models/userModel');
 const Review = require('../../models/reviewModel');
 
 //Config env vars, before reading app module
@@ -29,7 +30,15 @@ mongoose
   })
   .then(() => console.log('You are connected to the DB 🕴️'));
 
-//READ DATA FROM FILE
+//READ DATA FROM FILES
+const tours = JSON.parse(
+  // eslint-disable-next-line no-template-curly-in-string
+  fs.readFileSync(`${__dirname}/tours.json`, 'utf-8')
+);
+const users = JSON.parse(
+  // eslint-disable-next-line no-template-curly-in-string
+  fs.readFileSync(`${__dirname}/users.json`, 'utf-8')
+);
 const reviews = JSON.parse(
   // eslint-disable-next-line no-template-curly-in-string
   fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
@@ -38,7 +47,12 @@ const reviews = JSON.parse(
 //IMPORT DATA INTO DB
 const importData = async () => {
   try {
-    //create it in the model
+    //create it in the models
+    await Tour.create(tours);
+    // Turn of validation for creating users(confirmpassword...)
+    // Note! you need to manually comment out the middlewares
+    // of password encryption & changedAt
+    await User.create(users, { validateBeforeSave: false });
     await Review.create(reviews);
     console.log('Data successfuly loaded');
   } catch (err) {
@@ -50,7 +64,8 @@ const importData = async () => {
 // DELETE ALL DATA FROM DB
 const deleteData = async () => {
   try {
-    //Pass in array, for each a new doc is created
+    await Tour.deleteMany();
+    await User.deleteMany();
     await Review.deleteMany();
     console.log('Data successfuly deleted');
   } catch (err) {

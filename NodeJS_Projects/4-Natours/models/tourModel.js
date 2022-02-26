@@ -145,6 +145,16 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// Sort price in ascending order (-1 des) and storing in a set
+// So if we specify in URL price[lt]=1000, then only
+//ths first 3 docs will get scanned, since the prices are sorted
+// tourSchema.index({ price: 1 });
+
+// compund index, sorting fields and storing in a seperate set
+// now 'price[lt]=1000&ratingsAverage[gte]=4.7' will run much faster
+//because it will go only over fewer docs
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+
 //VIRTUAL: virtual properties are not persistent in the the DB
 //but calculated when needed!
 //We can't use a virtual prperty in query (like: =1, no!)
@@ -156,32 +166,28 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
-//review when user requests only one tour
+//Defining a virtual field that will be populated later on getTour
+// Virtual populate, that is for a father who doesnt know his children
+//but his children know him :)
+//In order not to do child ref for reviews, because
+//each can have a lot of reviews, we caculate it here
+//and dont persist on LS
 tourSchema.virtual('reviews', {
   ref: 'Review',
+  //the field to other model where the current doc is stored
   foreignField: 'tour',
+  //where the id is stored in the current model
+  //the _id, is how it's called in this model is called 'tour' in the foreign m
   localField: '_id',
 });
-// Virtual populate for reviews
-//In order not to do child ref for reviews, because
-//each can have a lot of reviews, we caculate it here 
-//and dont persist on LS
-// tourSchema.virtual('reviews', {
-//   ref: 'Review',
-//   //the field to other model where the ref
-//   //the current model is stored
-//   foreignField: 'tour',
-//   //where the id is stored in the current model
-//   //the _id, which is how it called in this model is called 'tour' in the foreign m
-//   localField: '_id',
-// });
 
-//mongoose has its own mw stack, which differs frim the app mw
+//mongoose has its own mw stack, which differs from the app mw
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create() (not on update)
 
 //this refers to the document
 //Define a slug field before creating a new doc
+//save middleware run on save() and update(), but not on findByIdUpdate
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   //console.log(this);

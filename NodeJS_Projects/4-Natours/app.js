@@ -18,6 +18,7 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
 //Import routers (also mw)
+// This routers are mini apps
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
@@ -68,7 +69,7 @@ app.use(mongoSanitize());
 //It could be injected to the html site and create damage
 app.use(xss());
 
-// Prevent parameter pollution (clean the query string from duplicates) 
+// Prevent parameter pollution (clean the query string from duplicates)
 // so we protect from error
 // If the query is (?sort=duration&sort=price) then it will sort only by the last one, which is priceDiscount
 // We specify whitelist - an array of properties which we allow dupliate in query string

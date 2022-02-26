@@ -59,6 +59,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // DOCUMENT MIDDLEWARES
+//doesnt run before findAndUpdate!
 //Encrypt password between getting the data and saving it to the DB
 userSchema.pre('save', async function (next) {
   //Only run this function if password was actually modified
@@ -75,6 +76,7 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
 //Before saving, update passwordChangedAt property
 userSchema.pre('save', function (next) {
   //if password hasnt changed just now/the doc is new,

@@ -3,6 +3,14 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
+// MW for user manipulating himself
+exports.createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not defined! use signUp instead. 😡',
+  });
+};
+
 //Filtering chosen fields(allowedFields) in the body(obj)
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -12,19 +20,6 @@ const filterObj = (obj, ...allowedFields) => {
   });
   return newObj;
 };
-
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  //SEND RESPONSE
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-});
 
 // User updating himself
 exports.updateMe = catchAsync(async (req, res, next) => {
@@ -61,6 +56,12 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+// GET current user
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
 // DELETE - diactivate user, user can diactive himself
 exports.deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
@@ -71,23 +72,9 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yed defined!',
-  });
-};
-
-exports.createUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yed defined!',
-  });
-};
-
+exports.getAllUsers = factory.getAll(User);
+exports.getUser = factory.getOne(User);
 // Do NOT update passwords with this!
-// they dont pass the 'save' middleware
-// updateUser, deleteUser is only for admin
+// updateUser & deleteUser are only for admin
 exports.updateUser = factory.updateOne(User);
-
 exports.deleteUser = factory.deleteOne(User);
