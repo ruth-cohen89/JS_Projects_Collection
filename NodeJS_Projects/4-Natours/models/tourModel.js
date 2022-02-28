@@ -49,6 +49,8 @@ const tourSchema = new mongoose.Schema(
       //Validator (for numbers and dates)
       min: [1, 'Rating must be above 1.0'],
       max: [5, 'Rating must be below 5.0'],
+      //Runs every time a val is set to this fiels
+      set: (val) => Math.round(val * 10) / 10, // 4.66666, 46.666, 47, 4.7
     },
     ratingsQuantity: {
       type: Number,
@@ -97,14 +99,14 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    startLocations: {
-      // GeoJSON, nested-embedded objects, with schema options
-      //Mulitple geometries, default Point
-      type: {
-        type: String,
-        default: 'Point',
-        enum: ['Point'],
-      },
+    // nested-embedded objects, with schema options
+    startLocation: {
+        // GeoJSON
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point']
+        },
       //an array of points. latitude, longitude
       coordinates: [Number],
       address: String,
@@ -145,7 +147,7 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
-// Sort price in ascending order (-1 des) and storing in a set
+// Sort p rice in ascending order (-1 des) and storing in a set
 // So if we specify in URL price[lt]=1000, then only
 //ths first 3 docs will get scanned, since the prices are sorted
 // tourSchema.index({ price: 1 });
@@ -154,6 +156,9 @@ const tourSchema = new mongoose.Schema(
 // now 'price[lt]=1000&ratingsAverage[gte]=4.7' will run much faster
 //because it will go only over fewer docs
 tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+//2d sphere index
+tourSchema.index({ startLocation: '2dsphere' });
 
 //VIRTUAL: virtual properties are not persistent in the the DB
 //but calculated when needed!
@@ -184,13 +189,14 @@ tourSchema.virtual('reviews', {
 //mongoose has its own mw stack, which differs from the app mw
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create() (not on update)
+// Not running on update, findByIdAndUpdate & findByIdAndDelete
 
 //this refers to the document
 //Define a slug field before creating a new doc
-//save middleware run on save() and update(), but not on findByIdUpdate
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
-  //console.log(this);
+  // console.log(this);
+  // console.log(this.slug);
   next();
 });
 
@@ -226,13 +232,14 @@ tourSchema.post(/^find/, function (docs, next) {
 // AGGREGATION MIDDLEWARE
 //Runs before an aggregation executes
 //Making sure that secretTours won't be displayed to the user
-tourSchema.pre('aggregate', function (next) {
-  //Add at the beginning of the pipeline array another stage
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  console.log(this.pipeline());
-  console.log('aggregation mw!');
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   //Add at the beginning of the pipeline array another stage
+//   //Matching tours that are not secret
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   console.log(this.pipeline());
+//   console.log('aggregation mw!');
+//   next();
+// });
 
 //Create a model, which is also a collection
 //An instance of a model is called a document.
