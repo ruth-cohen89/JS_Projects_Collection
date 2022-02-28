@@ -28,6 +28,16 @@ router
     tourController.getMonthlyPlan
   );
 
+// Find tours within a radius (based on a given distance)
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(tourController.getToursWithin);
+// /tours-distance/233/latlng/-40,45/mi
+// /tours-within/233/center/34.305562, -118.535168/unit/mi
+
+//Calculate distance from a certain point to all the tours in the collection
+router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
+
 router
   .route('/')
   .get(tourController.getAllTours)

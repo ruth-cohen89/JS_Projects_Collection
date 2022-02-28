@@ -51,7 +51,7 @@ const importData = async () => {
     await Tour.create(tours);
     // Turn of validation for creating users(confirmpassword...)
     // Note! you need to manually comment out the middlewares
-    // of password encryption & changedAt
+    // of password encryption & changedAt (the 2 pre save mw)
     await User.create(users, { validateBeforeSave: false });
     await Review.create(reviews);
     console.log('Data successfuly loaded');
