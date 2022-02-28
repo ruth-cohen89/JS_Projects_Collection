@@ -88,7 +88,7 @@ exports.login = catchAsync(async (req, res, next) => {
   // 3) If everything is ok, send token to client
   createSendToken(user, 200, res);
 });
-
+//client-side-renered done :)
 //Authenticate the user by his token
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Get token and check if it's there
