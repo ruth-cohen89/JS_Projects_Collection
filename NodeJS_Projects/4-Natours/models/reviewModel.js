@@ -38,6 +38,7 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// Preventing a user from posting a review more than once on a tour
 // Each combination of user-tour review has to be unique
 reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
