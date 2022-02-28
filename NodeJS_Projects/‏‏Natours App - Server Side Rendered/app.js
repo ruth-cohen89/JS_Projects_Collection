@@ -1,4 +1,5 @@
 //The express application
+// Server Side Rendered
 //Create an express app, which is a series of middlewares
 //it automatically has a server inside
 const express = require('express');
