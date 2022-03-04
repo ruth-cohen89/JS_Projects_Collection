@@ -1,11 +1,9 @@
-// All those js files in the public folder are for running some
-// functionality in the front end
+// All js files in the public folder contain front end code
 // This file is running on the front end side
 /* eslint-disable */
 console.log('hello from the client');
-const locations = JSON.parse(document.getElementById('map').dataset.locations);
-console.log(locations);
 
+export const displayMap = (locations) => {
 mapboxgl.accessToken = 
 'pk.eyJ1IjoicnV0aC1jb2hlbjg5IiwiYSI6ImNsMDhicHYwZTAxeWUza3F1aHpqcGp4djYifQ.aKSKkgyvvrMIEveBJu_w4g';
 
@@ -56,11 +54,12 @@ locations.forEach(loc => {
 // Sets the viewport to contain the given bounds.
 // fitbounds moves and zooms the map right to the bounds
 // to fit the markers
-map.fitBounds(bounds,  {
+  map.fitBounds(bounds,  {
     padding: {
       top: 200,
       buttom: 150,
       left: 100,
       right: 100
     }
-});
+  });
+};

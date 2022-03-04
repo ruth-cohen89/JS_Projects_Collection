@@ -89,12 +89,11 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-//client-side-renered done :)
 //Authenticate the user by his token
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Get token and check if it's there
   let token;
-  // If the client is postman
+  // If the client is postman, the API tester
   // then it will send the token in a header "Bearer"
   if (
     req.headers.authorization &&
@@ -145,6 +144,39 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// Only for rendered pages, no errors!
+// If there's is a cookie in the response then considers the user as logged in
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      // 1) verify token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
+
+      // 2) Check if user still exists
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+
+      // 3) Check if user changed password after the token was issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      // THERE IS A LOGGED IN USER
+      // store user as JSON object
+      res.locals.user = currentUser;
+      return next();
+    } catch (err) {
+      return next();
+    }
+  }
+  next();
+};
 
 //implements authorization
 //retrict route to specified users only
