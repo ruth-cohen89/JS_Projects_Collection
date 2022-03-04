@@ -69,11 +69,11 @@ app.use('/api', limiter);
 
 // Body parser,
 //express.json is a mw that returns the request body
-// Enables the next mw to read data from the body, req.body
+// Enables the next mw's to acces, req.body
 app.use(express.json({ limit: '10kb' }));
 
 // Cookie parser,
-// Enables the next mw to read data from the cookie, req.cookies
+// Enables the next mw's to access the cookie, req.cookies
 app.use(cookieParser());
 
 // Data sanitization against NoQsql query injection (sql pollution)

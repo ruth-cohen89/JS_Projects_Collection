@@ -2,6 +2,7 @@ const express = require('express');
 
 const viewsController = require('../controllers/viewsController');
 const authController = require('../controllers/authController');
+
 const router = express.Router();
 
 // ROUTES which return a dynamic rendered file
@@ -11,10 +12,11 @@ const router = express.Router();
 //finding that file in the views folder we specidied ('base')
 // when sending JSON data we specified .route() first, but here we only want get reqs
 // The overview is the root, default
+
+router.use(authController.isLoggedIn);
+//authController.protect,
 router.get('/', viewsController.getOverview);
-
-router.get('/tour/:slug', authController.protect, viewsController.getTour);
-
+router.get('/tour/:slug', viewsController.getTour);
 router.get('/login', viewsController.getLoginForm);
 
 module.exports = router;

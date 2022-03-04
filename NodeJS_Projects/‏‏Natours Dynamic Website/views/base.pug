@@ -26,9 +26,11 @@ html
     include _footer
     
     //- Axios object added to the global scope, for creating requests by the browser
-    script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.0/axios.min.js')
-    script(src='/js/mapbox.js')
-    script(src='/js/login.js')    
-
+    //- script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.0/axios.min.js')
+    //- script(src='/js/mapbox.js')
+    //- script(src='/js/login.js') 
+    //- contain all the code of the js files in 'public'   
+    script(src='/js/bundle.js' )
+    //- script(src='/js/bundled/index.js')
 
 

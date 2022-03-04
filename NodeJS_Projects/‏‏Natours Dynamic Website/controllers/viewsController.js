@@ -1,4 +1,4 @@
-//This controller sends some html, css and js to the client (including data from the server)
+//This controller renders views
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
 
@@ -43,4 +43,3 @@ exports.getLoginForm = (req, res) => {
       title: 'User Login',
     });
 };
- 
