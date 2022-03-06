@@ -28,6 +28,7 @@ const createSendToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     //Don't let the browser modify/access the cookie
+    // we cant manipulate/delete the cookie in the front end js code on the browser
     //Preventing cross-site-scripting attacks - the attacker may reach LS of the browser
     httpOnly: true,
   };
@@ -89,9 +90,18 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
+
 //Authenticate the user by his token
+
 exports.protect = catchAsync(async (req, res, next) => {
-  // 1) Get token and check if it's there
+  // 1) Getting token and check of it's there
   let token;
   // If the client is postman, the API tester
   // then it will send the token in a header "Bearer"
@@ -111,12 +121,12 @@ exports.protect = catchAsync(async (req, res, next) => {
       new AppError('You are not logged in! Please log in to get access.', 401)
     );
   }
-  // 2) verify token (if payload hasn't changed & token hasn't expired)
+
+  // 2) Verification token
   //this functions 3rd arg should be a callback that will return the token, but we want to work with promises!
   //so we make it return a promise instead, by using promisify,
   // returning the token if successful
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  //console.log(decoded);
 
   // 3) Check if user still exists
   //maybe the user has been deleted after the token has been issued
@@ -124,7 +134,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
     return next(
-      new AppError('The user belonging to this token does no longer exist', 401)
+      new AppError(
+        'The user belonging to this token does no longer exist.',
+        401
+      )
     );
   }
 
@@ -138,15 +151,14 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  //GRANT ACCESS TO PROTECTED ROUTE
-  //If all correct - go to the next mw
+  // GRANT ACCESS TO PROTECTED ROUTE
   //Identify the user in request (we would use this data in next middlewares)
   req.user = currentUser;
+  res.locals.user = currentUser;
   next();
 });
 
 // Only for rendered pages, no errors!
-// If there's is a cookie in the response then considers the user as logged in
 exports.isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
     try {
@@ -168,7 +180,6 @@ exports.isLoggedIn = async (req, res, next) => {
       }
 
       // THERE IS A LOGGED IN USER
-      // store user as JSON object
       res.locals.user = currentUser;
       return next();
     } catch (err) {
@@ -177,7 +188,6 @@ exports.isLoggedIn = async (req, res, next) => {
   }
   next();
 };
-
 //implements authorization
 //retrict route to specified users only
 //A wrapper that takes in the args and returns the mw to execute now

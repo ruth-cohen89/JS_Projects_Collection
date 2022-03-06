@@ -1,5 +1,6 @@
 /* eslint-disable */
 import axios from 'axios';
+import { showAlert, hideAlert } from './alerts'
 
 export const login = async (email, password) => {
   //axios throws errors when there are
@@ -22,7 +23,7 @@ export const login = async (email, password) => {
   });
   
   if(res.data.status === 'success') {
-    alert('Logged in successfuly!');
+    showAlert('success', 'Logged in successfuly!');
     window.setTimeout(() => {
       //back to homepage
       location.assign('/')
@@ -31,9 +32,21 @@ export const login = async (email, password) => {
 
   } catch (err) {
       //The error response from the API
-      alert('error', err.response.data.message);
+    showAlert('error', err.response.data.message);
   }
-
-
 };
+
+export const logout = async () => {
+  try { 
+    const res = await axios({
+      method: 'GET',
+      url: 'http://127.0.0.1:8000/api/v1/users/logout',
+    });
+    // reload page and send new cookie
+    // location represents the current URL of the doc in the window
+    if(res.data.status = 'success') location.reload(true);
+  } catch(err) {
+    showAlert('error', 'Error logging out! Try again.')
+  }
+}
 
