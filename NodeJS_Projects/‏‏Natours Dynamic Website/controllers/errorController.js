@@ -30,39 +30,68 @@ const handleJWTExpiredError = () =>
   new AppError('Your token has expired! please log in again.', 401);
 
 //Handle development errors
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
+const sendErrorDev = (err, req, res) => {
+  // A) API
+  // original url = all the url without the host
+  if (req.originalUrl.startsWith('/api')) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack,
+    });
+  }
+
+  // B) RENDERED WEBSITE
+  console.error('ERROR 💥', err);
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: err.message,
   });
 };
 
-//Handle production errors
-const sendErrorProd = (err, res) => {
-  //Operational errors, trusted: send message to the client, (the user can understand them)
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    });
-    // Programming or other unknown error: don't leak error details,
-    //the user will not understand them
-  } else {
+// Handle production errors
+const sendErrorProd = (err, req, res) => {
+  // A) API
+  if (req.originalUrl.startsWith('/api')) {
+    //Operational errors, trusted: send message to the client, he can understand it
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+    }
+    // B) Programming or other unknown error: don't leak error details,
+    // the user will not understand it, weird error
     // 1) Log error
-    console.error('Error 💥', err);
-
+    console.error('ERROR 💥', err);
     // 2) Send generic message
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Something went very wrong!',
     });
   }
+
+  // B) RENDERED WEBSITE
+  // A) Operational, trusted error: send message to client
+  if (err.isOperational) {
+    console.log(err);
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message,
+    });
+  }
+  // B) Programming or other unknown error: don't leak error details
+  // 1) Log error
+  console.error('ERROR 💥', err);
+  // 2) Send generic message
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: 'Please try again later.',
+  });
 };
 
-// Controller code starts from here:
-// Handling all errors made by the API
+// The controller starts from here:
 module.exports = (err, req, res, next) => {
   //where the error was created is in the stck trace
   //when we create an error with the appError class this is an error we create
@@ -73,11 +102,9 @@ module.exports = (err, req, res, next) => {
 
   //throws the error according to the node environment
   if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(err, res);
+    sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
-    //console.log(err,'start')
     let error = Object.assign(err);
-    //console.log(error, 'done')
 
     //Here, we take async errors that were thrown (created by external, like mongoose server or jwt)
     //And mark them as operational by creating an error for each by the appError class
@@ -98,6 +125,6 @@ module.exports = (err, req, res, next) => {
     //Error by JWT, token expired
     if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
 
-    sendErrorProd(error, res);
+    sendErrorProd(error, req, res);
   }
 };

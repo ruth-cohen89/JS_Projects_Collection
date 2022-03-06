@@ -13,10 +13,14 @@ const router = express.Router();
 // when sending JSON data we specified .route() first, but here we only want get reqs
 // The overview is the root, default
 
-router.use(authController.isLoggedIn);
-//authController.protect,
-router.get('/', viewsController.getOverview);
-router.get('/tour/:slug', viewsController.getTour);
-router.get('/login', viewsController.getLoginForm);
+// Decide if user is logged in
+//router.use(authController.isLoggedIn);
+
+router.get('/', authController.isLoggedIn, viewsController.getOverview);
+router.get('/tour/:slug', authController.isLoggedIn, viewsController.getTour);
+router.get('/login', authController.isLoggedIn, viewsController.getLoginForm);
+
+// protect mw also check if user is logged in
+router.get('/me', authController.protect, viewsController.getAccount);
 
 module.exports = router;
