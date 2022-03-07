@@ -72,6 +72,11 @@ app.use('/api', limiter);
 // Enables the next mw's to acces, req.body
 app.use(express.json({ limit: '10kb' }));
 
+// express mw to show encoded data
+// The way the form sends data to the server is URL encoded
+// This is when we specify the form to do so, without using the API
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
 // Cookie parser,
 // Enables the next mw's to access the cookie, req.cookies
 app.use(cookieParser());
@@ -112,8 +117,8 @@ app.use(
 // Test middleware, finds out when the request happened
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  console.log(req.headers);
-  console.log(req.cookies);
+  // console.log(req.headers);
+  // console.log(req.cookies);
   next();
 });
 
