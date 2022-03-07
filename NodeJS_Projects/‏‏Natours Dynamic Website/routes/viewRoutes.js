@@ -23,4 +23,8 @@ router.get('/login', authController.isLoggedIn, viewsController.getLoginForm);
 // protect mw also check if user is logged in
 router.get('/me', authController.protect, viewsController.getAccount);
 
+//no need for protect,
+//the update route in the API passes throught this already in userRoutes
+//router.post('/submit-user-data', viewsController.updateUserData);
+
 module.exports = router;

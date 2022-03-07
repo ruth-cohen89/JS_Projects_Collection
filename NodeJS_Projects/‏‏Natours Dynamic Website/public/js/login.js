@@ -31,7 +31,7 @@ export const login = async (email, password) => {
   }
 
   } catch (err) {
-      //The error response from the API
+    //The error response from the API
     showAlert('error', err.response.data.message);
   }
 };

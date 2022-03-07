@@ -12,8 +12,9 @@ router.get('/logout', authController.logout);
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
-// Protect all following operations,
-// protect function provides the user id
+// Authorization with JWT implemented by protect method
+// Protecting all following operations,
+// protect method provides the user id
 router.use(authController.protect);
 
 //CRUD operations on authenticated (signed-in) users

@@ -24,6 +24,7 @@ const filterObj = (obj, ...allowedFields) => {
 // User updating himself
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs password data
+  console.log(req.body);
   if (req.body.password || req.body.passwordConfirm) {
     return next(
       new AppError(
@@ -32,17 +33,17 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       )
     );
   }
-  //save method isn't good in here, because it will use the doc mw,
+  // save method isn't good in here, because it will use the doc mw,
   // but we don't need them here. they are related to password actions
-  //also all the validators of other fields not good in here
+  // also all the validators of other fields not good in here
 
   // 2) Filtered out unwanted fields that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name', 'email');
 
   // 3) Update user document
-  //new: true - return the updated object, instead of the old one
+  // new: true - return the updated object, instead of the old one
   // in options, we don't specify the body, but the filterd fields,
-  //because otherwise, an attacker could write nody.role: 'admin', not good.
+  // because otherwise, an attacker could write nody.role: 'admin', not good.
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,

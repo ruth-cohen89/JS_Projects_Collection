@@ -206,7 +206,6 @@ exports.restrictTo =
     next();
   };
 
-//
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on POSTed email (we don't get the id)
   const user = await User.findOne({ email: req.body.email });
@@ -262,7 +261,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .createHash('sha256')
     .update(req.params.token)
     .digest('hex');
-  console.log(hashedToken, this.passwordResetExpires);
+ // console.log(hashedToken, this.passwordResetExpires);
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
@@ -288,11 +287,12 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   //If someone access your open computer when you are logged he can your password
   //so as a security measure, we ask him for the current password
 
-  // 1)  Get user from the collection
+  // 1)  Get user from the collection,
+  // req.user doesnt conatain the password field, that's why we fetch it now
   //password is hidden by default, so we specify that we want to get it
   const user = await User.findById(req.user.id).select('+password');
+
   // 2) Check if POSTed password is correct and user is found
-  //console.log(req.body.currentPassword);
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
     return next(new AppError('Your current password is wrong!', 401)); //401, unauthorized
   }
@@ -300,6 +300,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // 3a) If so, update password
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
+
   // 3b) Update changedPasswordAt property for the user,
   // validate passwordConfirm, and encrypt by pre doc mw
   await user.save();
