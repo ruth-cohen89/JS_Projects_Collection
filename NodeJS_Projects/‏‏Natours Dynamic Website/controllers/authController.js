@@ -18,7 +18,7 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-//Create token and return in the response
+//Create token and return in the response and in a cookie
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
@@ -32,6 +32,7 @@ const createSendToken = (user, statusCode, res) => {
     //Preventing cross-site-scripting attacks - the attacker may reach LS of the browser
     httpOnly: true,
   };
+
   // In production the cookie will be sent only on https
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
@@ -45,7 +46,7 @@ const createSendToken = (user, statusCode, res) => {
   //so in order to hide the password in the response, we do this:
   //Remove the password from the output
   user.password = undefined;
-  //SEND RESOPNSE(body)
+  //SEND RESOPNSE(body) in a promise which will be resolved by await
   res.status(statusCode).json({
     status: 'success',
     token,
@@ -70,7 +71,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 //login - verify name and password and create a token
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-
+ // console.log(req.header)
   // check the body of request is ok
   // 1) Check if the email and passowrd are valid
   if (!email || !password) {
