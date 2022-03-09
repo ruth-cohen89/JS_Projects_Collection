@@ -8,6 +8,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
+// Without image processing:
 //  Disk storage engine for toring files to disk.
 // const multerStorage = multer.diskStorage({
 //   // destination for storage
