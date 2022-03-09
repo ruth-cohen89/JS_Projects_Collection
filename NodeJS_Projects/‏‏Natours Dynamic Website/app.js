@@ -72,9 +72,9 @@ app.use('/api', limiter);
 // Enables the next mw's to acces, req.body
 app.use(express.json({ limit: '10kb' }));
 
-// express mw to show encoded data
+// express mw to show encoded data from a form
 // The way the form sends data to the server is URL encoded
-// This is when we specify the form to do so, without using the API
+// example: updating user data from a form, using POST request,without using the API
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Cookie parser,
