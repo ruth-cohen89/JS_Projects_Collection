@@ -2,6 +2,7 @@ const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 
+// mini app, mw
 const router = express.Router();
 
 //Related to authentication

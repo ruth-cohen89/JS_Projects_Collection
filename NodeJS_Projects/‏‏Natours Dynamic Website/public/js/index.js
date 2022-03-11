@@ -24,7 +24,7 @@ if (mapBox) {
     displayMap(locations);
   }
 
-// If there's a form
+// If there's a login form
 if (loginForm) {
   loginForm.addEventListener('submit', e => {
   // when a form is submitted, we want to prevent
@@ -41,16 +41,24 @@ if(logOutBtn) {
   logOutBtn.addEventListener('click', logout);
 };
 
-// If theres an update
+// If theres an user update form
 if (userDataForm) {
   userDataForm.addEventListener('submit', e => {
     e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    updateSettings({ name, email }, 'data');
+    // formData constructs a set of key-value pairs,
+    // with the format of multi-part/form-data,
+    // this way it will be able to encode files
+    const form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+    // const name = document.getElementById('name').value;
+    // const email = document.getElementById('email').value;
+    updateSettings(form, 'data');
   });
 }
 
+// password foem displayed
 if (userPasswordForm) {
   userPasswordForm.addEventListener('submit', async e => {
     e.preventDefault();
