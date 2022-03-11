@@ -1,7 +1,8 @@
 //Routes handlers
-//We fetch the data from the DB server
-//and then send it back to the user inside the server response.
-//Tour model
+// reads multi-part - form-data encoding
+const multer = require('multer');
+// Image processing library
+const sharp = require('sharp');
 const Tour = require('../models/tourModel');
 //API features
 // eslint-disable-next-line import/extensions
@@ -11,6 +12,81 @@ const AppError = require('../utils/appError');
 //Catch async errors class
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
+
+// Store in memory
+const multerStorage = multer.memoryStorage();
+
+// Filter images files
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    // accept file
+    cb(null, true);
+  } else {
+    // reject file
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+// upload mw
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadTourImages = upload.fields([
+  // only 1 field called imageCover which will be processed
+  { name: 'imageCover', naxCount: 1 },
+  // 3 fields named 'images'
+  { name: 'images', naxCount: 3 },
+]);
+
+//If we had only 'images' field to upload files from:
+// upload.array('images', naxCount: 3); req.files
+// Only 1 field:
+//upload.single('image')  req.file
+// Above we have a mix (upload.fields()) req.files
+
+// Resize uploaded user photo
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  // If there was no upload continue to next mw
+  // if (!req.files.imageCover || !req.files.images) return next();
+
+  //console.log(req.body); //body doesnt contain files
+  //console.log(req.files);
+  // 1) Cover image
+
+  // Add to req.body for later update in updateTour mw
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  // read from buffer and then save to memory
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(200, 1333) //2:3
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  // 1) Images
+  req.body.images = [];
+
+  // await Promise.all is waiting for the promosises array
+  // when each promise made inside the loop and was added to the array by map
+  // before moving out to of the loop to the next line (next())
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+
+      await sharp(file.buffer)
+        .resize(500, 500)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${filename}`);
+
+      // Add to req.body for later update in updateTour
+      req.body.images.push(filename);
+    })
+  );
+  console.log(req.body);
+  next();
+});
 
 //Manipulating the query object (before reaching getAllTours)
 //by adding the right API Features

@@ -31,7 +31,7 @@ const AppError = require('./utils/appError');
 //Error controller
 const globalErrorHandler = require('./controllers/errorController');
 
-//Import routers (also mw)
+// Import routers (also mw)
 // This routers are mini apps
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -39,6 +39,7 @@ const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 //Create Express application
 const app = express();
+
 // Template enigne, for creating templates & filling with data
 app.set('view engine', 'pug');
 //Define view folder
@@ -64,6 +65,7 @@ const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   message: 'Too many requests from this IP, please try again in an hour!',
 });
+
 //All routes that satrt with api
 app.use('/api', limiter);
 

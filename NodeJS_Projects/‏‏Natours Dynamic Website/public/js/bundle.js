@@ -8981,7 +8981,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-// type is either password or 'data' - email & name
+// type is either password or 'data' - email, name & photo
 var updateSettings = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(data, type) {
     var url, res;
@@ -9315,7 +9315,7 @@ var userPasswordForm = document.querySelector('.form-user-password'); // DELEGAT
 if (mapBox) {
   var locations = JSON.parse(mapBox.dataset.locations);
   (0, _mapbox.displayMap)(locations);
-} // If there's a form
+} // If there's a login form
 
 
 if (loginForm) {
@@ -9334,19 +9334,24 @@ if (logOutBtn) {
   logOutBtn.addEventListener('click', _login.logout);
 }
 
-; // If theres an update
+; // If theres an user update form
 
 if (userDataForm) {
   userDataForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var name = document.getElementById('name').value;
-    var email = document.getElementById('email').value;
-    (0, _updateSettings.updateSettings)({
-      name: name,
-      email: email
-    }, 'data');
+    e.preventDefault(); // formData constructs a set of key-value pairs,
+    // with the format of multi-part/form-data,
+    // this way it will be able to encode files
+
+    var form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]); // const name = document.getElementById('name').value;
+    // const email = document.getElementById('email').value;
+
+    (0, _updateSettings.updateSettings)(form, 'data');
   });
-}
+} // password foem displayed
+
 
 if (userPasswordForm) {
   userPasswordForm.addEventListener('submit', /*#__PURE__*/function () {

@@ -1,4 +1,5 @@
 /* eslint-disable */
+// axios is for makeing HTTP requests from node.js
 import axios from 'axios';
 import { showAlert, hideAlert } from './alerts'
 

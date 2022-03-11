@@ -48,7 +48,7 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
-// A single file with a 'photo' field which holds the uploaded file in the form
+// Upload a single file from 'photo' field in the form
 // single mw uploads the file to the destination
 // and updates it in the req object (req.file)
 exports.uploadUserPhoto = upload.single('photo');
@@ -63,6 +63,7 @@ exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
 
   // read file and resize (h, w),
   // h=w -> square
+  // read from buffer and then save to memory
   await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
