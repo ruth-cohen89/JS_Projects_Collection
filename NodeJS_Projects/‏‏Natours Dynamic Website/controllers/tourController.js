@@ -6,7 +6,6 @@ const sharp = require('sharp');
 const Tour = require('../models/tourModel');
 //API features
 // eslint-disable-next-line import/extensions
-
 //App Error class
 const AppError = require('../utils/appError');
 //Catch async errors class

@@ -2,7 +2,9 @@
 // This file is running on the front end side
 /* eslint-disable */
 console.log('hello from the client');
-
+// locations was sent from the tour template as a parameter
+exports.uppercase = str => str.toUpperCase()
+exports.a = 1
 export const displayMap = (locations) => {
 mapboxgl.accessToken = 
 'pk.eyJ1IjoicnV0aC1jb2hlbjg5IiwiYSI6ImNsMDhicHYwZTAxeWUza3F1aHpqcGp4djYifQ.aKSKkgyvvrMIEveBJu_w4g';
