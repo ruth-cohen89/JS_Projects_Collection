@@ -85,6 +85,7 @@ if (userPasswordForm) {
 if (bookBtn) {
   bookBtn.addEventListener('click', e => {
     e.target.textContent = 'Processing...';
+    // taking param tourId from the pug template
     const { tourId } = e.target.dataset;
     bookTour(tourId);
   });

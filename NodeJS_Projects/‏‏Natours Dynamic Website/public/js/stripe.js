@@ -5,13 +5,13 @@ import { showAlert, hideAlert } from './alerts'
 
 export const bookTour = async (tourId) => {
   try {
-    const stripe = window.Stripe("pk_test_51Kc3R6GVbNtop8FTTLJXyCoKliw3LhASX2BNQgwlobX90nrqSInOlZick4AFB8iqcnEJeYYFc1W34UMDTpLUw8aC00M3XsCxro");
     // const stripe = Stripe(
     //   'pk_test_51Kc3R6GVbNtop8FTTLJXyCoKliw3LhASX2BNQgwlobX90nrqSInOlZick4AFB8iqcnEJeYYFc1W34UMDTpLUw8aC00M3XsCxro'
     // );
+    // stripe object using stripe library with public key
+    const stripe = window.Stripe("pk_test_51Kc3R6GVbNtop8FTTLJXyCoKliw3LhASX2BNQgwlobX90nrqSInOlZick4AFB8iqcnEJeYYFc1W34UMDTpLUw8aC00M3XsCxro");
 
-  
-    // 1) Get checkout session from the API
+    // 1) Get checkout session from the API (bookingController)
     const session = await axios(
         `http://127.0.0.1:8000/api/v1/bookings/checkout-session/${tourId}`
     );
@@ -21,8 +21,9 @@ export const bookTour = async (tourId) => {
     await stripe.redirectToCheckout({
         sessionId: session.data.session.id
     });
-} catch (err) {
-    console.log(err);
-    showAlert('error', err);
-}
+
+  } catch (err) {
+      console.log(err);
+      showAlert('error', err);
+  }
 }

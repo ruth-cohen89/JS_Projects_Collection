@@ -67626,10 +67626,11 @@ var bookTour = /*#__PURE__*/function () {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            stripe = window.Stripe("pk_test_51Kc3R6GVbNtop8FTTLJXyCoKliw3LhASX2BNQgwlobX90nrqSInOlZick4AFB8iqcnEJeYYFc1W34UMDTpLUw8aC00M3XsCxro"); // const stripe = Stripe(
+            // const stripe = Stripe(
             //   'pk_test_51Kc3R6GVbNtop8FTTLJXyCoKliw3LhASX2BNQgwlobX90nrqSInOlZick4AFB8iqcnEJeYYFc1W34UMDTpLUw8aC00M3XsCxro'
             // );
-            // 1) Get checkout session from the API
+            // stripe object using stripe library with public key
+            stripe = window.Stripe("pk_test_51Kc3R6GVbNtop8FTTLJXyCoKliw3LhASX2BNQgwlobX90nrqSInOlZick4AFB8iqcnEJeYYFc1W34UMDTpLUw8aC00M3XsCxro"); // 1) Get checkout session from the API (bookingController)
 
             _context.next = 4;
             return (0, _axios.default)("http://127.0.0.1:8000/api/v1/bookings/checkout-session/".concat(tourId));
@@ -68038,7 +68039,8 @@ if (userPasswordForm) {
 
 if (bookBtn) {
   bookBtn.addEventListener('click', function (e) {
-    e.target.textContent = 'Processing...';
+    e.target.textContent = 'Processing...'; // taking param tourId from the pug template
+
     var tourId = e.target.dataset.tourId;
     (0, _stripe.bookTour)(tourId);
   });
