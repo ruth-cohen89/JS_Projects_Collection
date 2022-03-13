@@ -39,7 +39,7 @@ const createSendToken = (user, statusCode, res) => {
   // SEND COOKIE
   //Create cookie named jwt and data (token) we want to send in the cookie
   res.cookie('jwt', token, cookieOptions);
-
+  console.log(token)
   //All properties of a document that are selected as false
   //won't be displayed when the user asks to see the user document
   //but when creating a new doc (user) all assined fields are returned and seen
