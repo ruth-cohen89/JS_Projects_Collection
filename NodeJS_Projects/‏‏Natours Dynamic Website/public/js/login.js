@@ -29,10 +29,59 @@ export const login = async (email, password) => {
       //back to homepage
       location.assign('/')
     }, 1500);
+    //console.log(location.href)
   }
 
   } catch (err) {
     //The error response from the API
+    showAlert('error', err.response.data.message);
+  }
+};
+
+export const forgotPassword = async (email) => {
+  try { 
+    console.log('forgot')
+    const res = await axios({
+      method: 'POST',
+      url: 'http://127.0.0.1:8000/api/v1/users/forgotPassword',
+      data: { 
+        email,
+      }
+    });
+    //console.log(res)
+
+    if(res.data.status = 'success') {
+      showAlert('success', 'Reset email sent!');
+    }
+  //  console.log(location)
+  } catch(err) {
+    showAlert('error', err.response.data.message);
+  }
+};
+
+export const resetPassword = async (password, passwordConfirm) => {
+  try { 
+    //console.log('reset')
+    const token = location.href.split('/')[4];
+    const res = await axios({
+      method: 'PATCH',
+      url: `http://127.0.0.1:8000/api/v1/users/resetPassword/${token}`,
+      data: { 
+        password,
+        passwordConfirm,
+      }
+   });
+    //console.log(res)
+    if(res.data.status = 'success') {
+      showAlert('success', 'password has changed 😊');
+      window.setTimeout(() => {
+        //back to homepage
+        location.assign('/')
+      }, 1000);
+    }
+    //location.reload(true);
+  } catch(err) {
+    console.log(err.response.data.message)
     showAlert('error', err.response.data.message);
   }
 };
@@ -45,6 +94,7 @@ export const logout = async () => {
     });
     // reload page and send new cookie
     // location represents the current URL of the doc in the window
+   // console.log(location)
     if(res.data.status = 'success') location.reload(true);
   } catch(err) {
     showAlert('error', 'Error logging out! Try again.')

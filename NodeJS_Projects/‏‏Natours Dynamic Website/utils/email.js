@@ -1,8 +1,8 @@
 const nodemailer = require('nodemailer');
+const nodemailerSendgrid = require('nodemailer-sendgrid');
 const pug = require('pug');
 const htmlToText = require('html-to-text');
 
-//new Email(user, url).sendWelcome();
 module.exports = class Email {
   constructor(user, url) {
     this.to = user.email;
@@ -11,19 +11,17 @@ module.exports = class Email {
     this.from = `Ruth Cohen <${process.env.EMAIL_FROM}>`;
   }
 
-  // different transports for different environments
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // Sendgrid
-      // return nodemailer.createTransport({
-      //   service: 'SendGrid',
-      //   auth: {
-      //     user: process.env.SENDGRID_USERNAME,
-      //     pass: process.env.SENDGRID_PASSWORD,
-      //   },
-      // });
+      // Sendgrid as the transporter (using SMTP)
+      // sendGrid is a predefined service (no need to specify server & port)
+      // note: use mailsac.com email, emails will be sent to there
+      return nodemailer.createTransport(
+        nodemailerSendgrid({
+          apiKey: process.env.SENDGRID_PASSWORD,
+        })
+      );
     }
-
     // else - development, use MailTrap application
     // mails are not really sent but get caught into our Mailtrap inbox
     return nodemailer.createTransport({
@@ -51,19 +49,19 @@ module.exports = class Email {
       to: this.to,
       subject,
       html,
-      text: htmlToText.fromString(html),
+      text: htmlToText.fromString(html)
     };
 
     // 3) Create a transport and send email
     await this.newTransport().sendMail(mailOptions);
   }
 
-  // Send welcome email
   async sendWelcome() {
+    console.log(this);
     await this.send('welcome', 'Welcome to the Natours Family!');
+    console.log('welcome email sent!');
   }
 
-  // Send reset password email
   async sendPasswordReset() {
     await this.send(
       'passwordReset',

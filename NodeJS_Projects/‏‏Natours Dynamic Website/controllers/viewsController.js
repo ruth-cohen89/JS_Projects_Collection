@@ -1,6 +1,7 @@
 //This controller renders views
 const Tour = require('../models/tourModel');
 const User = require('../models/userModel');
+const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
@@ -40,6 +41,38 @@ exports.getLoginForm = (req, res) => {
     title: 'Log into your account',
   });
 };
+
+exports.forgotPassword = (req, res) => {
+  res.status(200).render('forgotPassword', {
+    title: 'Forgot password',
+  });
+};
+
+exports.resetPassword = (req, res) => {
+  res.status(200).render('resetPassword', {
+    title: 'Reset your password',
+  });
+};
+
+// All the tours that the user has booked
+exports.getMyTours = catchAsync(async (req, res, next) => {
+  // 1) Find all bookings of that user
+  const bookings = await Booking.find({ user: req.user.id });
+
+  // 2) Find tours with the retruned IDs
+  const tourIDs = bookings.map((el) => el.tour);
+
+  // Find all tours which their id is in tourIDs array
+  const tours = await Tour.find({ _id: { $in: tourIDs } });
+
+  res.status(200).render('overview', {
+    title: 'My tours',
+    tours,
+  });
+});
+// (In step 1 we could also populate user field on bookings and display
+// and do a virtual populate to bookings on Tour model
+// but its away more complicated and not efficient in this case.. so we do it manually)
 
 exports.getAccount = (req, res) => {
   // the protect mw gave us the current user

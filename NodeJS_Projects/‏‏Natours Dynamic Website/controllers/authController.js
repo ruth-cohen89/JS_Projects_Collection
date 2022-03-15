@@ -39,7 +39,7 @@ const createSendToken = (user, statusCode, res) => {
   // SEND COOKIE
   //Create cookie named jwt and data (token) we want to send in the cookie
   res.cookie('jwt', token, cookieOptions);
-  console.log(token)
+  //console.log(token)
   //All properties of a document that are selected as false
   //won't be displayed when the user asks to see the user document
   //but when creating a new doc (user) all assined fields are returned and seen
@@ -55,6 +55,7 @@ const createSendToken = (user, statusCode, res) => {
     },
   });
 };
+
 //sign up
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
@@ -68,15 +69,20 @@ exports.signup = catchAsync(async (req, res, next) => {
   // on development host is the local host with port 3000
   const url = `${req.protocol}://${req.get('host')}/me`;
   console.log(url);
+  // Send user a welcome email
+  // On production sign up with mailsac email
+  // On development the email for sign up does not matter,
+  // because all the mails will be trapped in mailtrap inbox
+  // on development we dont leak mails to real users
   await new Email(newUser, url).sendWelcome();
-
+  console.log('hmm');
   createSendToken(newUser, 201, res);
 });
 
 //login - verify name and password and create a token
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
- // console.log(req.header)
+  // console.log(req.header)
   // check the body of request is ok
   // 1) Check if the email and passowrd are valid
   if (!email || !password) {
@@ -215,6 +221,7 @@ exports.restrictTo =
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on POSTed email (we don't get the id)
   const user = await User.findOne({ email: req.body.email });
+
   if (!user) {
     return next(new AppError('There is no user with this email address.', 404));
   }
@@ -222,20 +229,22 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 2) Generate the random reset token
   // createPasswordResetToken modifies the data in user
   //and returns the unencryped version of the token
+  // the token is unique and has an expiration date, thats why we use it
   const resetToken = user.createPasswordResetToken();
 
   //Here we save the changes witout validating because we didnt modify all fields
   await user.save({ validateBeforeSave: false });
+
   // 3) Send it to user's email
   try {
     const resetURL = `${req.protocol}://${req.get(
       'host'
-    )}/api/v1/users/resetPassword/${resetToken}`;
+    )}/resetPassword/${resetToken}`;
     await new Email(user, resetURL).sendPasswordReset();
 
     res.status(200).json({
       status: 'success',
-      message: 'Token sent to email!'
+      message: 'Token sent to email!',
     });
   } catch (err) {
     user.passwordResetToken = undefined;
@@ -255,7 +264,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .createHash('sha256')
     .update(req.params.token)
     .digest('hex');
-  // console.log(hashedToken, this.passwordResetExpires);
+
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
@@ -265,10 +274,12 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError('Token is invalid or has expired', 400));
   }
+
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
+
   // 3) Update changedPasswordAt property for the user is by pre mw
   await user.save();
 

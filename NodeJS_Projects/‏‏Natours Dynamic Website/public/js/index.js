@@ -7,7 +7,7 @@
 // (document.get().. or parameters that were sent from the template)
 import '@babel/polyfill';
 
-import { login, logout } from './login';
+import { login, logout, forgotPassword, resetPassword } from './login';
 
 import { displayMap } from './mapbox';
 
@@ -18,6 +18,8 @@ import { bookTour } from './stripe';
 // DOM ELEMENTS 
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
+const forgotPasswordForm = document.querySelector('.form--forgot');
+const resetPasswordForm = document.querySelector('.form--reset');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
@@ -39,6 +41,25 @@ if (loginForm) {
     const password = document.getElementById('password').value;
     login(email, password);
   });
+}
+
+if(forgotPasswordForm) {
+ // console.log('forgotpassform')
+  forgotPasswordForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;  
+    forgotPassword(email);   
+  });
+}
+
+if(resetPasswordForm) {
+ console.log('resetPassForm')
+ resetPasswordForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const password = document.getElementById('password').value; 
+  const passwordConfirm = document.getElementById('passwordConfirm').value; 
+  resetPassword(password, passwordConfirm);   
+});
 }
 
 // If there's a logout btn

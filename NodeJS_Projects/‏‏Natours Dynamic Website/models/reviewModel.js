@@ -90,11 +90,6 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
   }
 };
 
-
-// exports.isExist = async (req, res, next) => {
-//     const found = await this.constructor.findOne(req.user.id, req.params.id);
-//     console.log(found);
-//   };
 // Calling the static function when new review is created (save/create)
 // note that the post mw doesnt get access to next()
 reviewSchema.post('save', function () {
@@ -104,18 +99,19 @@ reviewSchema.post('save', function () {
   this.constructor.calcAverageRatings(this.tour);
 });
 
-// Find the review document on findByIdAndUpdate, findByIdAndDelete
+// Pre queries: findByIdAndUpdate, findByIdAndDelete
 reviewSchema.pre(/^findOneAnd/, async function (next) {
   //since its a query mw, we dont have access to the doc
   //in order to access the doc we execute a query on the current q
   //Defining on the query the review document
+  // this - query, r - review doc
   this.r = await this.findOne();
   next();
 });
 
-
+// post queries: findByIdAndUpdate, findByIdAndDelete
 // Calling the static function when updating a review
-// to update the tour,
+// to update the *tour*,
 // we do it on post and not on pre,
 //because only then the query is executed and the review is updated
 reviewSchema.post(/^findOneAnd/, async function () {
