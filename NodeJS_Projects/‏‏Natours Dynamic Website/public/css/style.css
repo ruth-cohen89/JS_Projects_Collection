@@ -1236,6 +1236,7 @@ span.psw {
   padding: 5rem 7rem;
   border-radius: 5px;
 }
+
 .reset-form {
   margin: 0 auto;
   max-width: 55rem;
@@ -1248,6 +1249,7 @@ span.psw {
 .resetPassword {
   font-size: 1.9rem;
 }
+
 .form__input {
   display: block;
   font-family: inherit;

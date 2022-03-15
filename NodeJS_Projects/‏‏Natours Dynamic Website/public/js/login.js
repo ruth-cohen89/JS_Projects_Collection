@@ -29,7 +29,7 @@ export const login = async (email, password) => {
       //back to homepage
       location.assign('/')
     }, 1500);
-    //console.log(location.href)
+
   }
 
   } catch (err) {
@@ -37,6 +37,7 @@ export const login = async (email, password) => {
     showAlert('error', err.response.data.message);
   }
 };
+
 
 export const forgotPassword = async (email) => {
   try { 
@@ -86,6 +87,7 @@ export const resetPassword = async (password, passwordConfirm) => {
   }
 };
 
+
 export const logout = async () => {
   try { 
     const res = await axios({
@@ -94,7 +96,7 @@ export const logout = async () => {
     });
     // reload page and send new cookie
     // location represents the current URL of the doc in the window
-   // console.log(location)
+
     if(res.data.status = 'success') location.reload(true);
   } catch(err) {
     showAlert('error', 'Error logging out! Try again.')

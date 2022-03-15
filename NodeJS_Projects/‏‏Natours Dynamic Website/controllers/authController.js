@@ -55,7 +55,6 @@ const createSendToken = (user, statusCode, res) => {
     },
   });
 };
-
 //sign up
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
@@ -221,7 +220,6 @@ exports.restrictTo =
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on POSTed email (we don't get the id)
   const user = await User.findOne({ email: req.body.email });
-
   if (!user) {
     return next(new AppError('There is no user with this email address.', 404));
   }
@@ -229,12 +227,13 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 2) Generate the random reset token
   // createPasswordResetToken modifies the data in user
   //and returns the unencryped version of the token
+
   // the token is unique and has an expiration date, thats why we use it
+
   const resetToken = user.createPasswordResetToken();
 
   //Here we save the changes witout validating because we didnt modify all fields
   await user.save({ validateBeforeSave: false });
-
   // 3) Send it to user's email
   try {
     const resetURL = `${req.protocol}://${req.get(
@@ -264,7 +263,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .createHash('sha256')
     .update(req.params.token)
     .digest('hex');
-
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
@@ -274,12 +272,10 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError('Token is invalid or has expired', 400));
   }
-
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
-
   // 3) Update changedPasswordAt property for the user is by pre mw
   await user.save();
 

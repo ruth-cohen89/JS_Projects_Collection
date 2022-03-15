@@ -8833,15 +8833,6 @@ var login = /*#__PURE__*/function () {
               window.setTimeout(function () {
                 //back to homepage
                 location.assign('/');
-              }, 1500); //console.log(location.href)
-            }
-
-            _context.next = 10;
-            break;
-
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](0);
             //The error response from the API
             (0, _alerts.showAlert)('error', _context.t0.response.data.message);
 
@@ -8860,14 +8851,20 @@ var login = /*#__PURE__*/function () {
 
 exports.login = login;
 
+
 var forgotPassword = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(email) {
+
+var logout = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+
     var res;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.prev = 0;
+
             console.log('forgot');
             _context2.next = 4;
             return (0, _axios.default)({
@@ -8976,6 +8973,9 @@ var logout = /*#__PURE__*/function () {
           case 0:
             _context4.prev = 0;
             _context4.next = 3;
+
+            _context2.next = 3;
+
             return (0, _axios.default)({
               method: 'GET',
               url: 'http://127.0.0.1:8000/api/v1/users/logout'
@@ -8993,10 +8993,23 @@ var logout = /*#__PURE__*/function () {
           case 7:
             _context4.prev = 7;
             _context4.t0 = _context4["catch"](0);
+
+            res = _context2.sent;
+            // reload page and send new cookie
+            // location represents the current URL of the doc in the window
+            if (res.data.status = 'success') location.reload(true);
+            _context2.next = 10;
+            break;
+
+          case 7:
+            _context2.prev = 7;
+            _context2.t0 = _context2["catch"](0);
+
             (0, _alerts.showAlert)('error', 'Error logging out! Try again.');
 
           case 10:
           case "end":
+
             return _context4.stop();
         }
       }
@@ -9005,6 +9018,15 @@ var logout = /*#__PURE__*/function () {
 
   return function logout() {
     return _ref4.apply(this, arguments);
+
+            return _context2.stop();
+        }
+      }
+    }, _callee2, null, [[0, 7]]);
+  }));
+
+  return function logout() {
+    return _ref2.apply(this, arguments);
   };
 }();
 
@@ -68080,10 +68102,9 @@ if (loginForm) {
     var password = document.getElementById('password').value;
     (0, _login.login)(email, password);
   });
+
 }
 
-if (forgotPasswordForm) {
-  // console.log('forgotpassform')
   forgotPasswordForm.addEventListener('submit', function (e) {
     e.preventDefault();
     var email = document.getElementById('email').value;
@@ -68099,12 +68120,9 @@ if (resetPasswordForm) {
     var passwordConfirm = document.getElementById('passwordConfirm').value;
     (0, _login.resetPassword)(password, passwordConfirm);
   });
+
 } // If there's a logout btn
-
-
 if (logOutBtn) {
-  logOutBtn.addEventListener('click', _login.logout);
-}
 
 ; // If theres an user update form
 

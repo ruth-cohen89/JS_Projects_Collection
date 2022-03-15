@@ -25,12 +25,8 @@ router.get(
 );
 router.get('/tour/:slug', authController.isLoggedIn, viewsController.getTour);
 router.get('/login', authController.isLoggedIn, viewsController.getLoginForm);
-router.get('/forgot-password', viewsController.forgotPassword);
-router.get(
-  '/resetPassword/:token',
-  // authController.saveResetToken,
-  viewsController.resetPassword
-);
+router.get('/forgotPassword', viewsController.forgotPassword);
+router.get('/resetPassword/:token', viewsController.resetPassword);
 
 // protect mw also check if user is logged in
 router.get('/me', authController.protect, viewsController.getAccount);
