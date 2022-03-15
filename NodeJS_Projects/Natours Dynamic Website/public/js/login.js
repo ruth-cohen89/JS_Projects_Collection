@@ -49,7 +49,7 @@ export const forgotPassword = async (email) => {
         email,
       }
     });
-    //console.log(res)
+   // console.log(res)
 
     if(res.data.status = 'success') {
       showAlert('success', 'Reset email sent!');

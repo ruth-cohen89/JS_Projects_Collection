@@ -44,7 +44,7 @@ if (loginForm) {
 }
 
 if(forgotPasswordForm) {
- // console.log('forgotpassform')
+//  console.log('forgotpassform')
   forgotPasswordForm.addEventListener('submit', e => {
     e.preventDefault();
     const email = document.getElementById('email').value;  
