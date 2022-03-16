@@ -53,7 +53,7 @@ if(forgotPasswordForm) {
 }
 
 if(resetPasswordForm) {
- console.log('resetPassForm')
+ //console.log('resetPassForm')
  resetPasswordForm.addEventListener('submit', e => {
   e.preventDefault();
   const password = document.getElementById('password').value; 

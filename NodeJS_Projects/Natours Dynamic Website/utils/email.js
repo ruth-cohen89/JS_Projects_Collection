@@ -13,6 +13,7 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
+      // TODO: make sure you can send emails on prod (implement forgot password on Dev)
       // Sendgrid as the transporter (using SMTP)
       // sendGrid is a predefined service (no need to specify server & port)
       // note: use mailsac.com email, emails will be sent to there

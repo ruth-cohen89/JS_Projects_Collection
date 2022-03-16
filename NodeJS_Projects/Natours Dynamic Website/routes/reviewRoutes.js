@@ -25,6 +25,7 @@ router
   .post(
     //Only users can post a review
     authController.restrictTo('user'),
+    reviewController.isBookedForUser,
     reviewController.setTourUserIds,
     reviewController.createReview
   );

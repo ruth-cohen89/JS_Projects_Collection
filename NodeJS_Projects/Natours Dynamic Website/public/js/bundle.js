@@ -50267,7 +50267,7 @@ if (forgotPasswordForm) {
 }
 
 if (resetPasswordForm) {
-  console.log('resetPassForm');
+  //console.log('resetPassForm')
   resetPasswordForm.addEventListener('submit', function (e) {
     e.preventDefault();
     var password = document.getElementById('password').value;
