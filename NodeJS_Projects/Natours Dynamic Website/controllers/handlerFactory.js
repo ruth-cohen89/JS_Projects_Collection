@@ -80,9 +80,9 @@ exports.getOne = (Model, popOptions) =>
 
 exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
-    // To allow for nested GET reviews on tour (hack)
     let filter = {};
-    //If user specified tour, then find only it's reviews
+    //If user specified tour,
+    // filter and find only his reviews/bookings - (Model)
     if (req.params.tourId) filter = { tour: req.params.tourId };
 
     //Passing a query object and the query string, chaining features
@@ -92,8 +92,7 @@ exports.getAll = (Model) =>
       .limitFields()
       .paginate();
     const doc = await features.query;
-    //const doc = await features.query.explain();
-    //console.log(tours)
+
     //SEND RESPONSE
     res.status(200).json({
       status: 'success',

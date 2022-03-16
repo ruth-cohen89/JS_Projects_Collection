@@ -29,8 +29,9 @@ exports.isBookedForUser = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.getAllReviews = factory.getAll(Review);
-exports.getReview = factory.getOne(Review);
+// CRUD
 exports.createReview = factory.createOne(Review);
 exports.updateReview = factory.updateOne(Review);
+exports.getAllReviews = factory.getAll(Review);
+exports.getReview = factory.getOne(Review);
 exports.deleteReview = factory.deleteOne(Review);

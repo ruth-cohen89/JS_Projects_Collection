@@ -6,6 +6,7 @@ const express = require('express');
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
 const reviewRouter = require('./reviewRoutes');
+const bookingRouter = require('./bookingRoutes');
 
 const router = express.Router();
 
@@ -15,6 +16,9 @@ const router = express.Router();
 // GET reviews on a specific tour
 //Nested route, mounting
 router.use('/:tourId/reviews', reviewRouter);
+
+// GET tours/456jio/bookings
+router.use('/:tourId/bookings', bookingRouter);
 
 // Aliasing
 router
