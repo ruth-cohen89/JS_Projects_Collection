@@ -1,9 +1,14 @@
 const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
+const bookingRouter = require('./bookingRoutes');
 
 // mini app, mw
 const router = express.Router();
+
+// GET users/456jio/bookings
+// Get all booking on user
+router.use('/:userId/bookings', bookingRouter);
 
 //Related to authentication
 router.post('/signup', authController.signup);
