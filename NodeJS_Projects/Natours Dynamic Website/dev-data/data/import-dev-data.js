@@ -1,4 +1,5 @@
 // Importing/deleting files to the DB
+// node ./dev-data/data/import-dev-data.js --import/delete
 //This script runs independently, and only at the begining (for importing)
 //We run this script from the console
 const fs = require('fs');

@@ -37,6 +37,16 @@ bookingSchema.pre(/^find/, function (next) {
   next();
 });
 
+// HOLD!!!
+// bookingSchema.pre('save', function (next) {
+//   const 
+//   // this.populate('user').populate({
+//   //   path: 'tour',
+//   //   select: 'name',
+//   // });
+//   next();
+// });
+
 const Booking = mongoose.model('Booking', bookingSchema);
 
 module.exports = Booking;

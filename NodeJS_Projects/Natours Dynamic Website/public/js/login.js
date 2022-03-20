@@ -38,6 +38,48 @@ export const login = async (email, password) => {
   }
 };
 
+export const signUp = async (name, email, password, passwordConfirm) => {
+  try {
+    const res = await axios({
+      method: 'POST',
+      url: 'http://127.0.0.1:8000/api/v1/users/signup',
+      data: { 
+        email,
+        password,
+        passwordConfirm,
+        name,
+      }
+    });
+    
+    if(res.data.status === 'success') {
+      showAlert('success', 'Signed up successfuly!');
+      window.setTimeout(() => {
+        //back to homepage
+        location.assign('/')
+      }, 1500);
+  
+    }
+  
+    } catch (err) {
+      //The error response from the API
+      showAlert('error', err.response.data.message);
+    }
+};
+
+export const logout = async () => {
+  try { 
+    const res = await axios({
+      method: 'GET',
+      url: 'http://127.0.0.1:8000/api/v1/users/logout',
+    });
+    // reload page and send new cookie
+    // location represents the current URL of the doc in the window
+
+    if(res.data.status = 'success') location.reload(true);
+  } catch(err) {
+    showAlert('error', 'Error logging out! Try again.')
+  }
+}
 
 export const forgotPassword = async (email) => {
   try { 
@@ -86,20 +128,3 @@ export const resetPassword = async (password, passwordConfirm) => {
     showAlert('error', err.response.data.message);
   }
 };
-
-
-export const logout = async () => {
-  try { 
-    const res = await axios({
-      method: 'GET',
-      url: 'http://127.0.0.1:8000/api/v1/users/logout',
-    });
-    // reload page and send new cookie
-    // location represents the current URL of the doc in the window
-
-    if(res.data.status = 'success') location.reload(true);
-  } catch(err) {
-    showAlert('error', 'Error logging out! Try again.')
-  }
-}
-

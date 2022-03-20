@@ -2,6 +2,8 @@
 //and also on update, (beacuse we defined them to on updateTour func)
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 //const User = require('./userModel');
 //const validator = require('validator');
 //The role of the schema is to describe the data,
@@ -94,6 +96,22 @@ const tourSchema = new mongoose.Schema(
       select: false,
     },
     startDates: [Date],
+    // {
+    //     date: {
+    //       type: Date,
+    //       required: [true, 'A tour must have a start date']
+    //     },
+    //     participants: {
+    //       type: Number,
+    //       default: 0,
+    //     },
+    //     soldOut: {
+    //       type: Boolean,
+    //       default: false,
+    //     },
+    //   },
+    // ],
+
     secretTour: {
       //schema type options
       type: Boolean,
@@ -101,12 +119,12 @@ const tourSchema = new mongoose.Schema(
     },
     // nested-embedded objects, with schema options
     startLocation: {
-        // GeoJSON
-        type: {
-          type: String,
-          default: 'Point',
-          enum: ['Point']
-        },
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
       //an array of points. latitude, longitude
       coordinates: [Number],
       address: String,
@@ -191,14 +209,21 @@ tourSchema.virtual('reviews', {
 // DOCUMENT MIDDLEWARE: runs before .save() and .create() (not on update)
 // Not running on update, findByIdAndUpdate & findByIdAndDelete
 
-//this refers to the document
-//Define a slug field before creating a new doc
+// this refers to the document
+// Define a slug field before creating a new doc
 // The slug is the name seperated by '-' (defines the URL endpoint)
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
+// Check if tour is sold out before creating ;)
+// tourSchema.pre('save', function (req, next) {
+//   const 
+
+//  // if 
+//   next();
+// });
 // QUERY MIDDLEWARE: executes for all functions starting with find
 
 //this refers to the current query
@@ -206,7 +231,6 @@ tourSchema.pre('save', function (next) {
 //the query made by .find()/findById() is executed(in getTour/Tours/updateTour)
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
-
   this.start = Date.now();
   next();
 });

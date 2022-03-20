@@ -8,9 +8,11 @@ const router = express.Router({ mergeParams: true });
 router.use(authController.protect);
 
 // create booking session
-//Doesnt follow REST Arc
+// Doesn't follow REST Arc
 // Accepting tour ID by which we will fill up
 // the checkout session with all the data that is necessary(name, price...)
+
+// Route for user to book a tour with checkout
 router.get(
   '/checkout-session/:tourId',
   authController.protect,

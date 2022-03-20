@@ -8,6 +8,7 @@ const factory = require('./handlerFactory');
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
   // 1) Get the currently booked tour
   const tour = await Tour.findById(req.params.tourId);
 
@@ -33,7 +34,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
         description: tour.summary,
         //live images on the internet
         images: [
-          `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`
+          `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`,
         ],
         amount: tour.price * 100, // in cents
         currency: 'usd',
@@ -52,10 +53,15 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // This is only TEMPORARY, because it's UNSECURE: everyone can make bookings without paying
   const { tour, user, price } = req.query;
-  console.log(req.query);
+
+  // If the request is not after user implemented checkout
   if (!tour && !user && !price) return next();
   await Booking.create({ tour, user, price });
 
+  console.log('Payment complete!');
+  //console.log(req.originalUrl.split('?'));
+
+  // Go to homepage ('/')
   res.redirect(req.originalUrl.split('?')[0]);
 });
 

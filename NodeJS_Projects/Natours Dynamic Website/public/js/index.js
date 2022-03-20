@@ -7,7 +7,7 @@
 // (document.get().. or parameters that were sent from the template)
 import '@babel/polyfill';
 
-import { login, logout, forgotPassword, resetPassword } from './login';
+import { login, signUp, logout, forgotPassword, resetPassword } from './login';
 
 import { displayMap } from './mapbox';
 
@@ -18,6 +18,7 @@ import { bookTour } from './stripe';
 // DOM ELEMENTS 
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
+const signUpForm = document.querySelector('.form--signup');
 const forgotPasswordForm = document.querySelector('.form--forgot');
 const resetPasswordForm = document.querySelector('.form--reset');
 const logOutBtn = document.querySelector('.nav__el--logout');
@@ -41,6 +42,17 @@ if (loginForm) {
     const password = document.getElementById('password').value;
     login(email, password);
   });
+}
+
+if(signUpForm) {
+  signUpForm.addEventListener('submit', e => {
+      e.preventDefault();
+      let name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const passwordConfirm = document.getElementById('passwordConfirm').value; 
+      signUp(name, email, password, passwordConfirm);
+    });
 }
 
 if(forgotPasswordForm) {
