@@ -13,18 +13,22 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // TODO: make sure you can send emails on prod (implement forgot password on Dev)
+      // TODO: make sure you can send emails on prod
       // Sendgrid as the transporter (using SMTP)
-      // sendGrid is a predefined service (no need to specify server & port)
-      // note: use mailsac.com email, emails will be sent to there
+      // emails are sent to mailsac.com
+      // to the actual real user address
       return nodemailer.createTransport(
+        // sendGrid is a predefined service
+        //(no need to specify server & port)
         nodemailerSendgrid({
           apiKey: process.env.SENDGRID_PASSWORD,
         })
       );
     }
     // else - development, use MailTrap application
-    // mails are not really sent but get caught into our Mailtrap inbox
+    // MailTrap as the transporter (using SMTP)
+    // emails are trapped into our MailTrap inbox
+    // and not sent to the real user addresse
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -38,6 +42,7 @@ module.exports = class Email {
   // Send the actual email
   async send(template, subject) {
     // 1) Render HTML based on a pug template
+    console.log(this.url)
     const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
       firstName: this.firstName,
       url: this.url,
@@ -52,13 +57,13 @@ module.exports = class Email {
       html,
       text: htmlToText.fromString(html),
     };
-    console.log(this)
+
     // 3) Create a transport and send email
     await this.newTransport().sendMail(mailOptions);
   }
 
   async sendWelcome() {
-    console.log(this);
+    //console.log(this);
     await this.send('welcome', 'Welcome to the Natours Family!');
     console.log('welcome email sent!');
   }

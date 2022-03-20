@@ -74,7 +74,6 @@ exports.signup = catchAsync(async (req, res, next) => {
   // because all the mails will be trapped in mailtrap inbox
   // on development we dont leak mails to real users
   await new Email(newUser, url).sendWelcome();
-  console.log('hmm');
   createSendToken(newUser, 201, res);
 });
 
