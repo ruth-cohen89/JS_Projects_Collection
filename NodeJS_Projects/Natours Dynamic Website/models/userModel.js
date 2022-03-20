@@ -56,8 +56,6 @@ const userSchema = new mongoose.Schema({
   emailConfirmed: {
     type: Boolean,
     default: true,
-    //dont show to user
-    select: false,
   },
   //If user is active
   active: {
@@ -166,7 +164,8 @@ userSchema.methods.createEmailConfirmToken = function () {
     .update(confirmToken)
     .digest('hex');
 
-  this.confirmEmailExpires = Date.now() + 10 * 60 * 1000;
+  // Valid for 3 days
+  this.confirmEmailExpires = Date.now() + 1000 * 60 * 60 * 24 * 3;
   return confirmToken;
 };
 

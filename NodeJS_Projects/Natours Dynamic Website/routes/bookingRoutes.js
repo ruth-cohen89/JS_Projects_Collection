@@ -12,7 +12,7 @@ router.use(authController.protect);
 // Accepting tour ID by which we will fill up
 // the checkout session with all the data that is necessary(name, price...)
 
-// Route for user to book a tour with checkout
+// Get checkout session to book a tour
 router.get(
   '/checkout-session/:tourId',
   authController.protect,

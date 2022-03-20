@@ -73,7 +73,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   //and returns the unencryped version of the token
   const confirmToken = newUser.createEmailConfirmToken();
 
-  //Here we save the changes witout validating because we didnt modify all fields
+  // Here we save the changes witout validating because we didnt modify all fields
   // Save user modification in createEmailConfirmToken
   await newUser.save({ validateBeforeSave: false });
   // 3) Send it to user's email
@@ -83,7 +83,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     )}/emailConfirm/${confirmToken}`;
     await new Email(newUser, confirmURL).sendWelcome();
     console.log(confirmURL);
-
+    createSendToken(newUser, 200, res);
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email!',
@@ -100,8 +100,8 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.emailConfirm = catchAsync(async (req, res, next) => {
-  console.log('confirming...', req.originalUrl)
- // console.log('confirming...', req.params.token)
+  console.log('confirming...', req.originalUrl);
+  // console.log('confirming...', req.params.token)
   // 1) Get user based on the token
   const hashedToken = crypto
     .createHash('sha256')
@@ -324,7 +324,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
-   console.log(user)
+   //console.log(user)
   // 2) If token has not expired, and there is user, set the new password
   if (!user) {
     return next(new AppError('Token is invalid or has expired', 400));

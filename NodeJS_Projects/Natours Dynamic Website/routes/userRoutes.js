@@ -10,7 +10,6 @@ const router = express.Router();
 // Get all booking on user
 router.use('/:userId/bookings', bookingRouter);
 
-//Related to authentication
 router.post('/signup', authController.signup);
 router.post('/emailConfirm/:token', authController.emailConfirm);
 router.post('/login', authController.login);
