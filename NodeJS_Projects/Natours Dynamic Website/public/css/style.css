@@ -899,6 +899,17 @@ span.psw {
   -ms-flex-pack: end;
   justify-content: flex-end;
 }
+.nav--confirm {
+  margin: 0 auto;
+  max-width: 700rem;
+  background-color: #fff;
+  -webkit-box-shadow: 0 2.5rem 8rem 2rem rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2.5rem 8rem 2rem rgba(0, 0, 0, 0.06);
+  padding: 10rem 15rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 9rem;
+}
 .nav__el,
 .nav__el:link,
 .nav__el:visited {
@@ -944,6 +955,15 @@ span.psw {
   border: 1px solid currentColor !important;
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
+}
+.nav__el--con {
+  padding: 2rem 3rem;
+  border-radius: 15rem;
+  border: 1px solid currentColor !important;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  font-size: 5rem;
+  text-decoration: none;
 }
 .nav__el--cta:hover {
   background-color: #f7f7f7;

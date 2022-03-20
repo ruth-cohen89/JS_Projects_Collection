@@ -12,6 +12,7 @@ router.use('/:userId/bookings', bookingRouter);
 
 //Related to authentication
 router.post('/signup', authController.signup);
+router.post('/emailConfirm/:token', authController.emailConfirm);
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 router.post('/forgotPassword', authController.forgotPassword);

@@ -30,6 +30,11 @@ router.get(
 router.get('/tour/:slug', authController.isLoggedIn, viewsController.getTour);
 router.get('/login', authController.isLoggedIn, viewsController.getLoginForm);
 router.get('/signup', authController.isLoggedIn, viewsController.getSignUpForm);
+router.get(
+  '/emailConfirm/:token',
+  // authController.isLoggedIn,
+  viewsController.confirmEmailForm
+);
 router.get('/forgotPassword', viewsController.forgotPassword);
 router.get('/resetPassword/:token', viewsController.resetPassword);
 

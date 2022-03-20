@@ -55,33 +55,83 @@ const createSendToken = (user, statusCode, res) => {
     },
   });
 };
-//sign up
+
 exports.signup = catchAsync(async (req, res, next) => {
+  // 1) Create user data
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     role: req.body.role,
+    // false until user confirms his email address
+    emailConfirmed: false,
   });
 
-  // on development host is the local host with port 3000
-  const url = `${req.protocol}://${req.get('host')}/me`;
-  console.log(url);
-  // Send user a welcome email
-  // On production sign up with mailsac email
-  // On development the email for sign up does not matter,
-  // because all the mails will be trapped in mailtrap inbox
-  // on development we dont leak mails to real users
-  await new Email(newUser, url).sendWelcome();
-  createSendToken(newUser, 201, res);
+  // 2) Generate confirm email random token
+  // createEmailConfirmToken modifies the data in user
+  //and returns the unencryped version of the token
+  const confirmToken = newUser.createEmailConfirmToken();
+
+  //Here we save the changes witout validating because we didnt modify all fields
+  // Save user modification in createEmailConfirmToken
+  await newUser.save({ validateBeforeSave: false });
+  // 3) Send it to user's email
+  try {
+    const confirmURL = `${req.protocol}://${req.get(
+      'host'
+    )}/emailConfirm/${confirmToken}`;
+    await new Email(newUser, confirmURL).sendWelcome();
+    console.log(confirmURL);
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email!',
+    });
+  } catch (err) {
+    newUser.confirmEmailToken = undefined;
+    newUser.confirmEmailExpires = undefined;
+    await newUser.save({ validateBeforeSave: false });
+    return next(
+      new AppError('There was an error sending the email. Try again later!'),
+      500
+    );
+  }
+});
+
+exports.emailConfirm = catchAsync(async (req, res, next) => {
+  console.log('confirming...', req.originalUrl)
+ // console.log('confirming...', req.params.token)
+  // 1) Get user based on the token
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+  const user = await User.findOne({
+    confirmEmailToken: hashedToken,
+    confirmEmailExpires: { $gt: Date.now() },
+  });
+  //console.log('po', user)
+  if (!user) {
+    return next(new AppError('Token is invalid or has expired', 400));
+  }
+  // 2) If token has not expired, and there is user, confirm the email
+  user.emailConfirmed = true;
+  console.log('po', user.emailConfirmed)
+  // Reset the confirm tk
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  // 3) Update
+  await user.save({ validateBeforeSave: false });
+  // 4) Log the user in, send JWT, now the reset password token will be forgotten - not valid
+  createSendToken(user, 200, res);
 });
 
 //login - verify name and password and create a token
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   // console.log(req.header)
-  // check the body of request is ok
+
   // 1) Check if the email and passowrd are valid
   if (!email || !password) {
     //create an error & send it to the global error mw handler
@@ -90,12 +140,19 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // 2) Check if the user exists && password is correct
-  //find by email and Select - return fields that by default are false(not displayed)
-  const user = await User.findOne({ email }).select('+password');
-  // console.log(user)
+  //find by email, select - return fields that by default are false(not displayed)
+  const user = await User.findOne({ email }).select('+password emailConfirmed'); ///working?
+  //console.log(user);
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Inncorrect email or password', 401));
   }
+  //console.log('here',user.emailConfirmed)
+  if (!user.emailConfirmed) {
+    return next(
+      new AppError('You have not confirmed your email address!', 401)
+    );
+  }
+
   // 3) If everything is ok, send token to client
   createSendToken(user, 200, res);
 });
@@ -198,7 +255,8 @@ exports.isLoggedIn = async (req, res, next) => {
   }
   next();
 };
-//implements authorization
+
+// Authorization
 //retrict route to specified users only
 //A wrapper that takes in the args and returns the mw to execute now
 //which will have access to roles because of the closure
@@ -228,7 +286,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   //and returns the unencryped version of the token
 
   // the token is unique and has an expiration date, thats why we use it
-
   const resetToken = user.createPasswordResetToken();
 
   //Here we save the changes witout validating because we didnt modify all fields
@@ -258,6 +315,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on the token
+  console.log(req.originalUrl)
   const hashedToken = crypto
     .createHash('sha256')
     .update(req.params.token)
@@ -266,7 +324,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
-
+   console.log(user)
   // 2) If token has not expired, and there is user, set the new password
   if (!user) {
     return next(new AppError('Token is invalid or has expired', 400));

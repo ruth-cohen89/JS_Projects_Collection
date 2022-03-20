@@ -7,7 +7,7 @@
 // (document.get().. or parameters that were sent from the template)
 import '@babel/polyfill';
 
-import { login, signUp, logout, forgotPassword, resetPassword } from './login';
+import { login, signUp, logout, forgotPassword, resetPassword, confirmEmail } from './login';
 
 import { displayMap } from './mapbox';
 
@@ -21,6 +21,7 @@ const loginForm = document.querySelector('.form--login');
 const signUpForm = document.querySelector('.form--signup');
 const forgotPasswordForm = document.querySelector('.form--forgot');
 const resetPasswordForm = document.querySelector('.form--reset');
+const confirmBtn = document.querySelector('.nav__el--con');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
@@ -53,7 +54,15 @@ if(signUpForm) {
       const passwordConfirm = document.getElementById('passwordConfirm').value; 
       signUp(name, email, password, passwordConfirm);
     });
-}
+} 
+
+if(confirmBtn) {
+  confirmBtn.addEventListener('click', confirmEmail);
+};
+
+if(logOutBtn) {
+  logOutBtn.addEventListener('click', logout);
+};
 
 if(forgotPasswordForm) {
 //  console.log('forgotpassform')
@@ -73,11 +82,6 @@ if(resetPasswordForm) {
   resetPassword(password, passwordConfirm);   
 });
 }
-
-// If there's a logout btn
-if(logOutBtn) {
-  logOutBtn.addEventListener('click', logout);
-};
 
 // If theres an user update form
 if (userDataForm) {

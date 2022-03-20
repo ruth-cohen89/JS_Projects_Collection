@@ -13,7 +13,7 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // TODO: make sure you can send emails on prod
+      // TODO: make sure you can send emails on prod (forgotPass and welcome)
       // Sendgrid as the transporter (using SMTP)
       // emails are sent to mailsac.com
       // to the actual real user address
@@ -25,7 +25,7 @@ module.exports = class Email {
         })
       );
     }
-    // else - development, use MailTrap application
+    // else - development, dont leak mails to real users
     // MailTrap as the transporter (using SMTP)
     // emails are trapped into our MailTrap inbox
     // and not sent to the real user addresse
@@ -42,7 +42,7 @@ module.exports = class Email {
   // Send the actual email
   async send(template, subject) {
     // 1) Render HTML based on a pug template
-    console.log(this.url)
+    console.log(this.url);
     const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
       firstName: this.firstName,
       url: this.url,

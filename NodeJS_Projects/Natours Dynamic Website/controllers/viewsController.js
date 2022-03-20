@@ -44,7 +44,13 @@ exports.getLoginForm = (req, res) => {
 
 exports.getSignUpForm = (req, res) => {
   res.status(200).render('signup', {
-    title: 'Sign up now :)',
+    title: 'Sign up now',
+  });
+};
+
+exports.confirmEmailForm = (req, res) => {
+  res.status(200).render('emailConfirm', {
+    title: 'Confirm Your Email Address',
   });
 };
 

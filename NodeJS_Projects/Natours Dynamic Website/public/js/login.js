@@ -52,12 +52,38 @@ export const signUp = async (name, email, password, passwordConfirm) => {
     });
     
     if(res.data.status === 'success') {
-      showAlert('success', 'Signed up successfuly!');
+      showAlert('success', 'We sent you a confimiration email');
+      // window.setTimeout(() => {
+      //   //back to homepage
+      //   location.assign('/')
+      // }, 2500);
+  
+    }
+  
+    } catch (err) {
+      //The error response from the API
+      showAlert('error', err.response.data.message);
+    }
+};
+
+export const confirmEmail = async () => {
+  try {
+    const token = location.href.split('/')[4];
+    //console.log(location.href.split('/'))
+    const url = `http://127.0.0.1:8000/api/v1/users/emailConfirm/${token}`;
+   // console.log(url,'url')
+
+    const res = await axios({
+      method: 'POST',
+      url,
+    });
+    
+    if(res.data.status === 'success') {
+      showAlert('success', 'Your email address has been confirmed!');
       window.setTimeout(() => {
         //back to homepage
         location.assign('/')
       }, 1500);
-  
     }
   
     } catch (err) {
@@ -104,8 +130,8 @@ export const forgotPassword = async (email) => {
 
 export const resetPassword = async (password, passwordConfirm) => {
   try { 
-    //console.log('reset')
     const token = location.href.split('/')[4];
+    console.log(token, 'token')
     const res = await axios({
       method: 'PATCH',
       url: `http://127.0.0.1:8000/api/v1/users/resetPassword/${token}`,

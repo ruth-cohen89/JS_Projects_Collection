@@ -47,8 +47,18 @@ const userSchema = new mongoose.Schema({
   },
   //This field exists only if password has been changed
   passwordChangedAt: Date,
+  // If reseting password
   passwordResetToken: String,
   passwordResetExpires: Date,
+  // If confirming email
+  confirmEmailToken: String,
+  confirmEmailExpires: Date,
+  emailConfirmed: {
+    type: Boolean,
+    default: true,
+    //dont show to user
+    select: false,
+  },
   //If user is active
   active: {
     type: Boolean,
@@ -140,6 +150,24 @@ userSchema.methods.createPasswordResetToken = function () {
   //for 10 min in ms
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
+};
+
+// To make authenticate the email confirm we use a token
+userSchema.methods.createEmailConfirmToken = function () {
+  //this token isnt created with jwt, but with crypto
+  //so we need to store it in db, so we will be able to compare after...
+  //we never store a raw token in the db, because if someone breaks it, he may get this token
+  //so store as encrypted, but not as strong as the passowrd, so use the built it crypto only
+  // create
+  const confirmToken = crypto.randomBytes(32).toString('hex');
+  // store
+  this.confirmEmailToken = crypto
+    .createHash('sha256')
+    .update(confirmToken)
+    .digest('hex');
+
+  this.confirmEmailExpires = Date.now() + 10 * 60 * 1000;
+  return confirmToken;
 };
 
 const User = mongoose.model('User', userSchema);

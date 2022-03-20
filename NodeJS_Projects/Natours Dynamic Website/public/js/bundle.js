@@ -8795,7 +8795,7 @@ exports.showAlert = showAlert;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.signUp = exports.resetPassword = exports.logout = exports.login = exports.forgotPassword = void 0;
+exports.signUp = exports.resetPassword = exports.logout = exports.login = exports.forgotPassword = exports.confirmEmail = void 0;
 
 var _axios = _interopRequireDefault(require("axios"));
 
@@ -8884,11 +8884,10 @@ var signUp = /*#__PURE__*/function () {
             res = _context2.sent;
 
             if (res.data.status === 'success') {
-              (0, _alerts.showAlert)('success', 'Signed up successfuly!');
-              window.setTimeout(function () {
-                //back to homepage
-                location.assign('/');
-              }, 1500);
+              (0, _alerts.showAlert)('success', 'We sent you a confimiration email'); // window.setTimeout(() => {
+              //   //back to homepage
+              //   location.assign('/')
+              // }, 2500);
             }
 
             _context2.next = 10;
@@ -8915,58 +8914,111 @@ var signUp = /*#__PURE__*/function () {
 
 exports.signUp = signUp;
 
-var logout = /*#__PURE__*/function () {
+var confirmEmail = /*#__PURE__*/function () {
   var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-    var res;
+    var token, url, res;
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.prev = 0;
-            _context3.next = 3;
+            token = location.href.split('/')[4]; //console.log(location.href.split('/'))
+
+            url = "http://127.0.0.1:8000/api/v1/users/emailConfirm/".concat(token); // console.log(url,'url')
+
+            _context3.next = 5;
             return (0, _axios.default)({
-              method: 'GET',
-              url: 'http://127.0.0.1:8000/api/v1/users/logout'
+              method: 'POST',
+              url: url
             });
 
-          case 3:
+          case 5:
             res = _context3.sent;
-            // reload page and send new cookie
-            // location represents the current URL of the doc in the window
-            if (res.data.status = 'success') location.reload(true);
-            _context3.next = 10;
+
+            if (res.data.status === 'success') {
+              (0, _alerts.showAlert)('success', 'Your email address has been confirmed!');
+              window.setTimeout(function () {
+                //back to homepage
+                location.assign('/');
+              }, 1500);
+            }
+
+            _context3.next = 12;
             break;
 
-          case 7:
-            _context3.prev = 7;
+          case 9:
+            _context3.prev = 9;
             _context3.t0 = _context3["catch"](0);
-            (0, _alerts.showAlert)('error', 'Error logging out! Try again.');
+            //The error response from the API
+            (0, _alerts.showAlert)('error', _context3.t0.response.data.message);
 
-          case 10:
+          case 12:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[0, 7]]);
+    }, _callee3, null, [[0, 9]]);
   }));
 
-  return function logout() {
+  return function confirmEmail() {
     return _ref3.apply(this, arguments);
   };
 }();
 
-exports.logout = logout;
+exports.confirmEmail = confirmEmail;
 
-var forgotPassword = /*#__PURE__*/function () {
-  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(email) {
+var logout = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
     var res;
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
             _context4.prev = 0;
+            _context4.next = 3;
+            return (0, _axios.default)({
+              method: 'GET',
+              url: 'http://127.0.0.1:8000/api/v1/users/logout'
+            });
+
+          case 3:
+            res = _context4.sent;
+            // reload page and send new cookie
+            // location represents the current URL of the doc in the window
+            if (res.data.status = 'success') location.reload(true);
+            _context4.next = 10;
+            break;
+
+          case 7:
+            _context4.prev = 7;
+            _context4.t0 = _context4["catch"](0);
+            (0, _alerts.showAlert)('error', 'Error logging out! Try again.');
+
+          case 10:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, null, [[0, 7]]);
+  }));
+
+  return function logout() {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+exports.logout = logout;
+
+var forgotPassword = /*#__PURE__*/function () {
+  var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(email) {
+    var res;
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.prev = 0;
             console.log('forgot');
-            _context4.next = 4;
+            _context5.next = 4;
             return (0, _axios.default)({
               method: 'POST',
               url: 'http://127.0.0.1:8000/api/v1/users/forgotPassword',
@@ -8976,7 +9028,7 @@ var forgotPassword = /*#__PURE__*/function () {
             });
 
           case 4:
-            res = _context4.sent;
+            res = _context5.sent;
 
             // console.log(res)
             if (res.data.status = 'success') {
@@ -8984,40 +9036,40 @@ var forgotPassword = /*#__PURE__*/function () {
             } //  console.log(location)
 
 
-            _context4.next = 11;
+            _context5.next = 11;
             break;
 
           case 8:
-            _context4.prev = 8;
-            _context4.t0 = _context4["catch"](0);
-            (0, _alerts.showAlert)('error', _context4.t0.response.data.message);
+            _context5.prev = 8;
+            _context5.t0 = _context5["catch"](0);
+            (0, _alerts.showAlert)('error', _context5.t0.response.data.message);
 
           case 11:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4, null, [[0, 8]]);
+    }, _callee5, null, [[0, 8]]);
   }));
 
   return function forgotPassword(_x7) {
-    return _ref4.apply(this, arguments);
+    return _ref5.apply(this, arguments);
   };
 }();
 
 exports.forgotPassword = forgotPassword;
 
 var resetPassword = /*#__PURE__*/function () {
-  var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(password, passwordConfirm) {
+  var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(password, passwordConfirm) {
     var token, res;
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            _context5.prev = 0;
-            //console.log('reset')
+            _context6.prev = 0;
             token = location.href.split('/')[4];
-            _context5.next = 4;
+            console.log(token, 'token');
+            _context6.next = 5;
             return (0, _axios.default)({
               method: 'PATCH',
               url: "http://127.0.0.1:8000/api/v1/users/resetPassword/".concat(token),
@@ -9027,8 +9079,8 @@ var resetPassword = /*#__PURE__*/function () {
               }
             });
 
-          case 4:
-            res = _context5.sent;
+          case 5:
+            res = _context6.sent;
 
             //console.log(res)
             if (res.data.status = 'success') {
@@ -9040,25 +9092,25 @@ var resetPassword = /*#__PURE__*/function () {
             } //location.reload(true);
 
 
-            _context5.next = 12;
+            _context6.next = 13;
             break;
 
-          case 8:
-            _context5.prev = 8;
-            _context5.t0 = _context5["catch"](0);
-            console.log(_context5.t0.response.data.message);
-            (0, _alerts.showAlert)('error', _context5.t0.response.data.message);
+          case 9:
+            _context6.prev = 9;
+            _context6.t0 = _context6["catch"](0);
+            console.log(_context6.t0.response.data.message);
+            (0, _alerts.showAlert)('error', _context6.t0.response.data.message);
 
-          case 12:
+          case 13:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5, null, [[0, 8]]);
+    }, _callee6, null, [[0, 9]]);
   }));
 
   return function resetPassword(_x8, _x9) {
-    return _ref5.apply(this, arguments);
+    return _ref6.apply(this, arguments);
   };
 }();
 
@@ -50289,6 +50341,7 @@ var loginForm = document.querySelector('.form--login');
 var signUpForm = document.querySelector('.form--signup');
 var forgotPasswordForm = document.querySelector('.form--forgot');
 var resetPasswordForm = document.querySelector('.form--reset');
+var confirmBtn = document.querySelector('.nav__el--con');
 var logOutBtn = document.querySelector('.nav__el--logout');
 var userDataForm = document.querySelector('.form-user-data');
 var userPasswordForm = document.querySelector('.form-user-password');
@@ -50322,6 +50375,18 @@ if (signUpForm) {
   });
 }
 
+if (confirmBtn) {
+  confirmBtn.addEventListener('click', _login.confirmEmail);
+}
+
+;
+
+if (logOutBtn) {
+  logOutBtn.addEventListener('click', _login.logout);
+}
+
+;
+
 if (forgotPasswordForm) {
   //  console.log('forgotpassform')
   forgotPasswordForm.addEventListener('submit', function (e) {
@@ -50339,14 +50404,8 @@ if (resetPasswordForm) {
     var passwordConfirm = document.getElementById('passwordConfirm').value;
     (0, _login.resetPassword)(password, passwordConfirm);
   });
-} // If there's a logout btn
+} // If theres an user update form
 
-
-if (logOutBtn) {
-  logOutBtn.addEventListener('click', _login.logout);
-}
-
-; // If theres an user update form
 
 if (userDataForm) {
   userDataForm.addEventListener('submit', function (e) {

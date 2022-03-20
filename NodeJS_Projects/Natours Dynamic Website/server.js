@@ -6,12 +6,10 @@ const mongoose = require('mongoose');
 //we will be able to connect to the DB
 const dotenv = require('dotenv');
 
-
-
 //catching & handling uncaught exceptions in synchronous code
 process.on('uncaughtException', (err) => {
   console.log('UNHANDLED REJECTION! 💥 Shutting down...');
-  console.log(err.name, err.message);
+  console.log(err.name, err);
   process.exit(1);
 });
 
