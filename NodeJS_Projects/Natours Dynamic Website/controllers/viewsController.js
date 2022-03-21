@@ -54,6 +54,18 @@ exports.confirmEmailForm = (req, res) => {
   });
 };
 
+exports.getStepOneForm = (req, res) => {
+  res.status(200).render('step1', {
+    title: 'Enter your phone number',
+  });
+};
+
+exports.getStepTWoForm = (req, res) => {
+  res.status(200).render('step2', {
+    title: 'Enter your verification code',
+  });
+};
+
 exports.forgotPassword = (req, res) => {
   res.status(200).render('forgotPassword', {
     title: 'Forgot password',

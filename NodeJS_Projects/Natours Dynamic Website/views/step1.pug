@@ -1,0 +1,12 @@
+extends base
+
+block content
+  main.main    
+      h2.heading-secondary.ma-bt-lg #{title}
+      p Please enter your phone number (in international format, starting with +) to receive a verification code:
+      form.form--insertPhone(method='post' action='/step2')
+        .form__group
+          label.form__label(for='tel') Phone number
+          input#tel(type='tel' name='number')
+        .form__group
+          button.btn.btn--green send Code

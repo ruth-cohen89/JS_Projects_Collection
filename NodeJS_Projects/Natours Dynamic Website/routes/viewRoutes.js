@@ -34,9 +34,12 @@ router.get(
   '/emailConfirm/:token',
   // authController.isLoggedIn,
   viewsController.confirmEmailForm
-);
+); 
 router.get('/forgotPassword', viewsController.forgotPassword);
 router.get('/resetPassword/:token', viewsController.resetPassword);
+router.get('/stepOne', viewsController.getStepOneForm);
+router.get('/stepTwo/:id', viewsController.getStepTWoForm);
+//router.get('/step2verification', viewsController.phoneVerification);
 
 // protect mw also check if user is logged in
 router.get('/me', authController.protect, viewsController.getAccount);

@@ -15,16 +15,24 @@ import { updateSettings } from './updateSettings'
 
 import { bookTour } from './stripe';
 
+import { getPhoneNumber } from './2-step verification';
+
 // DOM ELEMENTS 
 const mapBox = document.getElementById('map');
+
 const loginForm = document.querySelector('.form--login');
 const signUpForm = document.querySelector('.form--signup');
+
 const forgotPasswordForm = document.querySelector('.form--forgot');
 const resetPasswordForm = document.querySelector('.form--reset');
-const confirmBtn = document.querySelector('.nav__el--con');
-const logOutBtn = document.querySelector('.nav__el--logout');
+
+const insertPhoneForm = document.querySelector('.form--insertPhone');
+
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
+
+const confirmBtn = document.querySelector('.nav__el--con');
+const logOutBtn = document.querySelector('.nav__el--logout');
 const bookBtn = document.getElementById('book-tour');
 
 // DELEGATION
@@ -82,6 +90,15 @@ if(resetPasswordForm) {
   resetPassword(password, passwordConfirm);   
 });
 }
+
+if(insertPhoneForm) {
+  console.log('insert')
+  insertPhoneForm.addEventListener('submit', e => {
+   e.preventDefault();
+   const phoneNumber = document.getElementById('tel').value; 
+   getPhoneNumber(phoneNumber);
+ });
+ }
 
 // If theres an user update form
 if (userDataForm) {

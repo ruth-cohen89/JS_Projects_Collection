@@ -17,6 +17,10 @@ router.get('/logout', authController.logout);
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
+// 2-step verification
+router.post('/stepOnePhoneVer', authController.stepOnePhoneVer);
+//router.post('/stepTwoPhoneVer', authController.stepTwoPhoneVer);
+
 // Authentication with JWT implemented by protect method
 // Protecting all following operations,
 // protect method provides the user id
