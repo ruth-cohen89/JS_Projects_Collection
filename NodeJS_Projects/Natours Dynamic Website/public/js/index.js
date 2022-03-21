@@ -27,6 +27,7 @@ const forgotPasswordForm = document.querySelector('.form--forgot');
 const resetPasswordForm = document.querySelector('.form--reset');
 
 const insertPhoneForm = document.querySelector('.form--insertPhone');
+const insertVerificationCode = document.querySelector('.form--insertPhone');
 
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
@@ -92,11 +93,20 @@ if(resetPasswordForm) {
 }
 
 if(insertPhoneForm) {
-  console.log('insert')
+  console.log('insert phone')
   insertPhoneForm.addEventListener('submit', e => {
    e.preventDefault();
    const phoneNumber = document.getElementById('tel').value; 
    getPhoneNumber(phoneNumber);
+ });
+ }
+
+ if(insertVerificationCode) {
+  console.log('insert code')
+  insertVerificationCode.addEventListener('submit', e => {
+   e.preventDefault();
+   const code = document.getElementById('code').value; 
+   checkCode(code);
  });
  }
 

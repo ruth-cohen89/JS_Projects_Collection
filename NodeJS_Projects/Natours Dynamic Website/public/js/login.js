@@ -53,11 +53,6 @@ export const signUp = async (name, email, password, passwordConfirm) => {
     
     if(res.data.status === 'success') {
       showAlert('success', 'We sent you a confimiration email');
-      // window.setTimeout(() => {
-      //   //back to homepage
-      //   location.assign('/')
-      // }, 2500);
-  
     }
   
     } catch (err) {

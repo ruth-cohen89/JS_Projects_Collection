@@ -8884,10 +8884,7 @@ var signUp = /*#__PURE__*/function () {
             res = _context2.sent;
 
             if (res.data.status === 'success') {
-              (0, _alerts.showAlert)('success', 'We sent you a confimiration email'); // window.setTimeout(() => {
-              //   //back to homepage
-              //   location.assign('/')
-              // }, 2500);
+              (0, _alerts.showAlert)('success', 'We sent you a confimiration email');
             }
 
             _context2.next = 10;
@@ -50468,6 +50465,7 @@ var signUpForm = document.querySelector('.form--signup');
 var forgotPasswordForm = document.querySelector('.form--forgot');
 var resetPasswordForm = document.querySelector('.form--reset');
 var insertPhoneForm = document.querySelector('.form--insertPhone');
+var insertVerificationCode = document.querySelector('.form--insertPhone');
 var userDataForm = document.querySelector('.form-user-data');
 var userPasswordForm = document.querySelector('.form-user-password');
 var confirmBtn = document.querySelector('.nav__el--con');
@@ -50534,11 +50532,20 @@ if (resetPasswordForm) {
 }
 
 if (insertPhoneForm) {
-  console.log('insert');
+  console.log('insert phone');
   insertPhoneForm.addEventListener('submit', function (e) {
     e.preventDefault();
     var phoneNumber = document.getElementById('tel').value;
     (0, _stepVerification.getPhoneNumber)(phoneNumber);
+  });
+}
+
+if (insertVerificationCode) {
+  console.log('insert code');
+  insertVerificationCode.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var code = document.getElementById('code').value;
+    checkCode(code);
   });
 } // If theres an user update form
 

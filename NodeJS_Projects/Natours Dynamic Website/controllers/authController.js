@@ -2,35 +2,49 @@ const crypto = require('crypto');
 //promisify function
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
-const pug = require('pug');
-const htmlToText = require('html-to-text');
 const messagebird = require('messagebird')(process.env.MESSAGEBIRD_API_KEY);
 const User = require('../models/userModel');
+const RefreshToken = require('../models/refreshTokenModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Email = require('../utils/email');
 
-
-// Protect implements authentication
-// RestrictTo implements authorization
+// Protect - for authentication
+// RestrictTo - for authorization
 
 //In production we use https in order to hide the token
 //Create token and return
-const signToken = (id) =>
+const signAccessToken = (id) =>
   //(payload, key, header options)
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-//Create token and return in the response and in a cookie
-const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
+// DELETE THIS
+// const signRefreshToken = (id) =>
+//   //(payload, key, header options)
+//   jwt.sign({ id }, process.env.JWT_REFRESH_TOKEN_SECRET, {
+//     expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
+//   });
+
+//Create token & access token for login only
+const createSendToken = async (user, statusCode, res) => {
+  const accessToken = signAccessToken(user._id);
+
+  // we create the refresh token with random and not jwt
+  // so it will not be the same as access token with jwt
+  // (also to have multiple ref tok per a user)
+  // and a model to save it there
+  // create refresh token as an object
+
+  const refreshToken = await RefreshToken.createToken(user);
 
   const cookieOptions = {
     //converting days to ms
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
+
     //Don't let the browser modify/access the cookie
     // we cant manipulate/delete the cookie in the front end js code on the browser
     //Preventing cross-site-scripting attacks - the attacker may reach LS of the browser
@@ -42,18 +56,22 @@ const createSendToken = (user, statusCode, res) => {
 
   // SEND COOKIE
   //Create cookie named jwt and data (token) we want to send in the cookie
-  res.cookie('jwt', token, cookieOptions);
-  //console.log(token)
+  res.cookie('jwt', accessToken, refreshToken, cookieOptions);
+  res.cookie('refreshToken', refreshToken, cookieOptions);
+
   //All properties of a document that are selected as false
   //won't be displayed when the user asks to see the user document
   //but when creating a new doc (user) all assined fields are returned and seen
-  //so in order to hide the password in the response, we do this:
+  // in the res, so in order to hide the password in the response, we do this:
+
   //Remove the password from the output
   user.password = undefined;
+
   //SEND RESOPNSE(body) in a promise which will be resolved by await
   res.status(statusCode).json({
     status: 'success',
-    token,
+    accessToken,
+    refreshToken,
     data: {
       user,
     },
@@ -170,8 +188,65 @@ exports.logout = (req, res) => {
   res.status(200).json({ status: 'success' });
 };
 
-//Authenticate the user by his token
+// Create new access token when the current has expired
+exports.refreshToken = catchAsync(async (req, res, next) => {
+  const { refreshToken: requestToken } = req.body;
+  if (requestToken == null) {
+    return res.status(403).json({ message: 'Refresh Token is required!' });
+  }
+  const refreshToken = await RefreshToken.findOne({ token: requestToken });
+  if (!refreshToken) {
+    return next(new AppError('Refresh token is not in database!', 403));
+  }
 
+  // If refresh token has expired
+  if (RefreshToken.verifyExpiration(refreshToken)) {
+    // Remove from db
+    RefreshToken.findByIdAndRemove(refreshToken._id, {
+      useFindAndModify: false,
+    }).exec();
+    return next(
+      new AppError(
+        'Refresh token was expired. Please make a new signin request',
+        403
+      )
+    );
+  }
+
+  // New tokens
+  const newAccessToken = signAccessToken(refreshToken.user._id);
+  const newRefreshToken = await RefreshToken.createToken(refreshToken.user._id);
+  res.cookie('jwt', newAccessToken, {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.cookie('refreshToken', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+  });
+  // Send the old refresh token
+  //createSendToken(user, 200, res, refreshToken.token)
+
+  // Create access token
+//   const newAccessToken = jwt.sign({ id: refreshToken.user._id }, config.secret, {
+//       expiresIn: config.jwtExpiration,
+//   });
+//   return res.status(200).json({
+//     accessToken: newAccessToken,
+//     refreshToken: refreshToken.token,
+//   });
+// } catch (err) {
+//   return res.status(500).send({ message: err });
+// }
+});
+
+//Authenticate the user by his access token
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
   let token;
@@ -187,7 +262,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
   }
-
+  console.log(token)
   if (!token) {
     return next(
       new AppError('You are not logged in! Please log in to get access.', 401)
