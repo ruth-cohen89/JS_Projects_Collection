@@ -20,13 +20,6 @@ const signAccessToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-// DELETE THIS
-// const signRefreshToken = (id) =>
-//   //(payload, key, header options)
-//   jwt.sign({ id }, process.env.JWT_REFRESH_TOKEN_SECRET, {
-//     expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
-//   });
-
 //Create token & access token for login only
 const createSendToken = async (user, statusCode, res) => {
   const accessToken = signAccessToken(user._id);
@@ -210,6 +203,7 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
       )
     );
   }
+
   // Remove from db
   RefreshToken.findByIdAndRemove(refreshToken._id, {
     useFindAndModify: false,
@@ -233,20 +227,6 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,
   });
-  // Send the old refresh token
-  //createSendToken(user, 200, res, refreshToken.token)
-
-  // Create access token
-//   const newAccessToken = jwt.sign({ id: refreshToken.user._id }, config.secret, {
-//       expiresIn: config.jwtExpiration,
-//   });
-//   return res.status(200).json({
-//     accessToken: newAccessToken,
-//     refreshToken: refreshToken.token,
-//   });
-// } catch (err) {
-//   return res.status(500).send({ message: err });
-// }
 });
 
 //Authenticate the user by his access token

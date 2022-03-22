@@ -3,6 +3,7 @@ const express = require('express');
 const viewsController = require('../controllers/viewsController');
 const authController = require('../controllers/authController');
 const bookingController = require('../controllers/bookingController');
+const reviewController = require('../controllers/reviewController');
 
 const router = express.Router();
 
@@ -27,6 +28,13 @@ router.get(
   authController.isLoggedIn,
   viewsController.getOverview
 );
+router.get(
+  '/:slug/review',
+  authController.protect,
+  // Check if its a user
+  authController.restrictTo('user'),
+  viewsController.getReviewForm
+);
 router.get('/tour/:slug', authController.isLoggedIn, viewsController.getTour);
 router.get('/login', authController.isLoggedIn, viewsController.getLoginForm);
 router.get('/signup', authController.isLoggedIn, viewsController.getSignUpForm);
@@ -34,7 +42,7 @@ router.get(
   '/emailConfirm/:token',
   // authController.isLoggedIn,
   viewsController.confirmEmailForm
-); 
+);
 router.get('/forgotPassword', viewsController.forgotPassword);
 router.get('/resetPassword/:token', viewsController.resetPassword);
 router.get('/stepOne', viewsController.getStepOneForm);

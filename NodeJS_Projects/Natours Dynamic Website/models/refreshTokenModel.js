@@ -7,14 +7,11 @@ const refreshTokensSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.ObjectId, ref: 'User' },
   token: String,
   expiryDate: Date,
-  // created: { type: Date, default: Date.now },
-  // revoked: Date,
-  // replacedByToken: String,
 });
 
 refreshTokensSchema.statics.createToken = async function (user) {
   const expiredAt = new Date();
-  // refresh token expiration
+  // refresh token expiration (3d)
   expiredAt.setSeconds(
     expiredAt.getSeconds() + process.env.JWT_REFRESH_TOKEN_EXPIRES_IN
   );
@@ -35,10 +32,10 @@ refreshTokensSchema.statics.createToken = async function (user) {
 };
 
 // Return refresh token expiration time
-refreshTokensSchema.statics.verifyExpiration = (token) =>{
+refreshTokensSchema.statics.verifyExpiration = (token) => {
   token.expiryDate.getTime() < new Date().getTime();
 }
- 
+
 
 const RefreshToken = mongoose.model('RefreshToken', refreshTokensSchema);
 module.exports = RefreshToken;

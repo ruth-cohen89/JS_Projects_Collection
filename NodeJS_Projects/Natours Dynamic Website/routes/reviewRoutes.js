@@ -22,6 +22,7 @@ router
   //and authorized (by restrictTo function) can post a review
   //protect actually provides the user id,
   //so no need to specicy the user id in the req
+  // post '...api/v1/tours/5c88fa8cf4afda39709c2955/reviews'
   .post(
     //Only users can post a review
     authController.restrictTo('user'),

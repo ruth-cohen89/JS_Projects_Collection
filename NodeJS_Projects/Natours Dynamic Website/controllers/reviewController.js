@@ -21,11 +21,12 @@ exports.isBookedForUser = catchAsync(async (req, res, next) => {
     tour: req.params.tourId,
     user: req.user.id,
   });
+
   if (booking.length === 0) {
     return next(new AppError('You did not book this tour 🥴', 401));
   }
   // Tour was actually booked
-  console.log('booked!');
+  //console.log('booked!');
   next();
 });
 

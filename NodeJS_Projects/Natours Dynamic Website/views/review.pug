@@ -1,0 +1,11 @@
+extends base
+
+block content
+  main.main    
+   .login-form
+      h2.heading-secondary.ma-bt-lg #{title}
+      form.form.form--review
+        .form__group
+          textarea#review.form__comment(type='text', required)
+        .form__group
+          button.btn.btn--green Send

@@ -234,6 +234,17 @@ body {
   background-color: #55c57a;
   color: #fff;
 }
+.btn--black {
+  background-color: black;
+  font-weight: 700;
+  margin-right: 2.25rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-right: 2.25rem;
+  text-transform: uppercase;
+  color: #fff;
+  font-size: 1.4rem;
+}
 .btn--green::after {
   background-color: #55c57a;
 }
@@ -962,8 +973,10 @@ span.psw {
   border: 1px solid currentColor !important;
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
-  font-size: 5rem;
+  font-size: 4rem;
   text-decoration: none;
+  background-color: #55c57a;
+  color: greenyellow;
 }
 .nav__el--cta:hover {
   background-color: #f7f7f7;
@@ -1297,9 +1310,37 @@ span.psw {
   border-radius: 4px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  /* Pseudo element (a visible thing that isn't really in the DOM).
-      Also needs -ms- */
+  width: 300px;
 }
+
+.form__comment{
+  display: block;
+  font-family: inherit;
+  font-size: 1.5rem;
+  color: inherit;
+  padding: 1.25rem 1.75rem;
+  border: none;
+  width: 100%;
+  background-color: #fff;
+  background-color: #f2f2f2;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 300px;
+    line-height:32px;
+font-size:20px; 
+   border: 10px solid green;
+  font-style:italic; 
+line-height:32px;
+font-size:20px;
+border-radius: 5px;
+line-break: auto;
+}
+
 .form__input:focus {
   outline: none;
   border-bottom: 3px solid #55c57a;
