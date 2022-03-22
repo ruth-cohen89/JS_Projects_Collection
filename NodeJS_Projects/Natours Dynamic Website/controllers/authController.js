@@ -210,6 +210,10 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
       )
     );
   }
+  // Remove from db
+  RefreshToken.findByIdAndRemove(refreshToken._id, {
+    useFindAndModify: false,
+  }).exec();
 
   // New tokens
   const newAccessToken = signAccessToken(refreshToken.user._id);
@@ -225,6 +229,7 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
+    message: 'New access and refresh tokens.',
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,
   });

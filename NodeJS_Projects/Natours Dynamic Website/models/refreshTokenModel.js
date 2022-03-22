@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const refreshTokensSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.ObjectId, ref: 'User' },
   token: String,
-  expires: Date,
+  expiryDate: Date,
   // created: { type: Date, default: Date.now },
   // revoked: Date,
   // replacedByToken: String,
@@ -35,8 +35,10 @@ refreshTokensSchema.statics.createToken = async function (user) {
 };
 
 // Return refresh token expiration time
-refreshTokensSchema.statics.verifyExpiration = (token) =>
+refreshTokensSchema.statics.verifyExpiration = (token) =>{
   token.expiryDate.getTime() < new Date().getTime();
+}
+ 
 
 const RefreshToken = mongoose.model('RefreshToken', refreshTokensSchema);
 module.exports = RefreshToken;
