@@ -99,27 +99,12 @@ exports.signup = catchAsync(async (req, res, next) => {
   // Save user modification in createEmailConfirmToken
   await newUser.save({ validateBeforeSave: false });
 
-  // 3) Send it to user's email
-  try {
-    const confirmURL = `${req.protocol}://${req.get(
-      'host'
-    )}/emailConfirm/${confirmToken}`;
-    await new Email(newUser, confirmURL).sendWelcome();
-    console.log(confirmURL);
-    createSendToken(newUser, 200, res);
-    res.status(200).json({
-      status: 'success',
-      message: 'Token sent to email!',
-    });
-  } catch (err) {
-    newUser.confirmEmailToken = undefined;
-    newUser.confirmEmailExpires = undefined;
-    await newUser.save({ validateBeforeSave: false });
-    return next(
-      new AppError('There was an error sending the email. Try again later!'),
-      500
-    );
-  }
+  const confirmURL = `${req.protocol}://${req.get(
+    'host'
+  )}/emailConfirm/${confirmToken}`;
+  await new Email(newUser, confirmURL).sendWelcome();
+  console.log(confirmURL);
+  createSendToken(newUser, 200, res);
 });
 
 exports.emailConfirm = catchAsync(async (req, res, next) => {
@@ -429,10 +414,10 @@ exports.stepOnePhoneVer = catchAsync((req, res, next) => {
   };
   messagebird.verify.create(number, params, (err, response) => {
     if (err) {
-      console.log('error!',err);
+      console.log('error!', err);
       return next(new AppError(err.errors[0].description, 400));
     }
-    console.log('response:',response);
+    console.log('response:', response);
     // res.status(200).json({
     //   status: 'success',
     //   id: response.id,
