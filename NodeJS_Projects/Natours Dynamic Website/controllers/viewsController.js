@@ -2,6 +2,7 @@
 const Tour = require('../models/tourModel');
 const User = require('../models/userModel');
 const Booking = require('../models/bookingModel');
+const Review = require('../models/reviewModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
@@ -22,23 +23,42 @@ exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findOne({ slug: req.params.slug }).populate({
     path: 'reviews',
     fields: 'review rating user',
-  });
+  }); // Send user to template
 
+  let notBooked = true;
   if (!tour) {
     return next(new AppError('There is no tour with that name.', 404));
   }
 
+  // If user is looged in check if booked tour
+  if (res.locals.user) {
+    // Check if user
+    const booking = await Booking.find({
+      user: res.locals.user,
+      tour,
+    });
+    console.log(booking)
+    console.log(res.locals.user._id)
+    console.log(tour._id)
+    if (booking.length > 0) {
+      // mark as not booked for template
+      //res.locals.notBooked = true;
+      notBooked = false;
+      console.log('booking found');
+    }
+  }
+console.log(notBooked)
   // 2) Build template
   // 3) Render template using data from 1)
   res.status(200).render('tour', {
     title: `${tour.name} Tour`,
     tour,
+    notBooked,
   });
 });
 
 exports.getReviewForm = catchAsync(async (req, res, next) => {
   const tour = await Tour.findOne({ slug: req.params.slug })
-  //console.log(tour._id)
   const booking = await Booking.find({
     tour: tour._id,
     user: req.user.id,
@@ -111,6 +131,23 @@ exports.getMyTours = catchAsync(async (req, res, next) => {
     tours,
   });
 });
+
+exports.getMyReviews = catchAsync(async (req, res, next) => {
+  // 1) Find all bookings of that user
+  const reviews = await Review.find({ user: req.user.id });
+
+  // 2) Find tours with the retruned IDs
+  const tourIDs = reviews.map((el) => el.tour);
+
+  // Find all tours which their id is in tourIDs array
+  const tours = await Tour.find({ _id: { $in: tourIDs } });
+
+  res.status(200).render('overview', {
+    title: 'My tours',
+    tours,
+  });
+});
+
 // (In step 1 we could also populate user field on bookings and display
 // and do a virtual populate to bookings on Tour model
 // but its away more complicated and not efficient in this case.. so we do it manually)

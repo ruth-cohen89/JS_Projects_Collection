@@ -5,10 +5,7 @@ import { showAlert, hideAlert } from './alerts'
 
 export const bookTour = async (tourId) => {
   try {
-    // const stripe = Stripe(
-    //   'pk_test_51Kc3R6GVbNtop8FTTLJXyCoKliw3LhASX2BNQgwlobX90nrqSInOlZick4AFB8iqcnEJeYYFc1W34UMDTpLUw8aC00M3XsCxro'
-    // );
-    // stripe object using stripe library with public key
+
     const stripe = window.Stripe("pk_test_51Kc3R6GVbNtop8FTTLJXyCoKliw3LhASX2BNQgwlobX90nrqSInOlZick4AFB8iqcnEJeYYFc1W34UMDTpLUw8aC00M3XsCxro");
 
     // 1) Get checkout session from the API (bookingController)

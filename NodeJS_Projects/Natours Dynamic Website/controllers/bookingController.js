@@ -6,6 +6,21 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 
+exports.isBooked = catchAsync(async (req, res, next) => {
+  const booking = await Booking.find({
+    user: req.user.id,
+    tour: req.params.tourId,
+  });
+  console.log(req.user.id)
+  console.log(req.params.tourId)
+  if (booking.length !== 0) {
+    console.log('booking found')
+    return next(new AppError('You have already booked this tour!', 401));
+  }
+  console.log('not booked')
+  next();
+});
+
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -50,10 +65,11 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   });
 });
 
+// Accessiable only throw the website (the credit card and details need to be written in a form)
 exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // This is only TEMPORARY, because it's UNSECURE: everyone can make bookings without paying
   const { tour, user, price } = req.query;
-
+  console.log(req.query)
   // If the request is not after user implemented checkout
   if (!tour && !user && !price) return next();
   await Booking.create({ tour, user, price });

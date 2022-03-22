@@ -35,7 +35,11 @@ router.get(
   authController.restrictTo('user'),
   viewsController.getReviewForm
 );
-router.get('/tour/:slug', authController.isLoggedIn, viewsController.getTour);
+router.get(
+  '/tour/:slug',
+  authController.isLoggedIn,
+  viewsController.getTour
+);
 router.get('/login', authController.isLoggedIn, viewsController.getLoginForm);
 router.get('/signup', authController.isLoggedIn, viewsController.getSignUpForm);
 router.get(
@@ -52,6 +56,7 @@ router.get('/stepTwo/:id', viewsController.getStepTWoForm);
 // protect mw also check if user is logged in
 router.get('/me', authController.protect, viewsController.getAccount);
 router.get('/my-tours', authController.protect, viewsController.getMyTours);
+router.get('/my-reviews', authController.protect, viewsController.getMyReviews);
 
 //no need for protect,
 //the update route in the API passes throught this already in userRoutes

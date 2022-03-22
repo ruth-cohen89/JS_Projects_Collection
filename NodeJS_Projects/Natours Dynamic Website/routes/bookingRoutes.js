@@ -12,10 +12,11 @@ router.use(authController.protect);
 // Accepting tour ID by which we will fill up
 // the checkout session with all the data that is necessary(name, price...)
 
-// Get checkout session to book a tour
+// Get checkout session to book a tour on website
 router.get(
   '/checkout-session/:tourId',
   authController.protect,
+  bookingController.isBooked,
   bookingController.getCheckoutSession
 );
 
