@@ -233,7 +233,7 @@ body {
 .btn--green {
   background-color: #55c57a;
   color: #fff;
-}
+} 
 .btn--black {
   background-color: black;
   font-weight: 700;
@@ -1312,14 +1312,32 @@ span.psw {
   box-sizing: border-box;
   width: 300px;
 }
-
+.form__comment_input {
+  display: block;
+  font-family: inherit;
+  font-size: 1.5rem;
+  color: inherit;
+  padding: 1.25rem 1.75rem;
+  width: 100%;
+  background-color: #fff;
+  background-color: #f2f2f2;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 300px;
+  border: 7px solid green;
+  box-sizing: border-box;
+}
 .form__comment{
   display: block;
   font-family: inherit;
   font-size: 1.5rem;
   color: inherit;
   padding: 1.25rem 1.75rem;
-  border: none;
   width: 100%;
   background-color: #fff;
   background-color: #f2f2f2;
@@ -1362,7 +1380,12 @@ line-break: auto;
   font-weight: 700;
   margin-bottom: 0.75rem;
 }
-
+.form__label_comment {
+  display: block;
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
 .form__photo-upload {
   display: -webkit-box;
   display: -ms-flexbox;

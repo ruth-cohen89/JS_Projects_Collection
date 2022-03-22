@@ -11,6 +11,8 @@ import { login, signUp, logout, forgotPassword, resetPassword, confirmEmail } fr
 
 import { displayMap } from './mapbox';
 
+import { createReview } from './createReview';
+
 import { updateSettings } from './updateSettings'
 
 import { bookTour } from './stripe';
@@ -22,6 +24,7 @@ const mapBox = document.getElementById('map');
 
 const loginForm = document.querySelector('.form--login');
 const signUpForm = document.querySelector('.form--signup');
+const reviewForm = document.querySelector('.form--review');
 
 const forgotPasswordForm = document.querySelector('.form--forgot');
 const resetPasswordForm = document.querySelector('.form--reset');
@@ -63,6 +66,18 @@ if(signUpForm) {
       const passwordConfirm = document.getElementById('passwordConfirm').value; 
       signUp(name, email, password, passwordConfirm);
     });
+} 
+
+if(reviewForm) {
+  reviewForm.addEventListener('submit', e => {
+      e.preventDefault();
+      // Tour id was saved on the element
+      const { tourId } = e.target.dataset;
+      //console.log(tourId)
+      const review = document.getElementById('review').value; 
+      const rating = document.getElementById('rating').value; 
+      createReview(review, rating, tourId);
+  });
 } 
 
 if(confirmBtn) {
@@ -127,7 +142,7 @@ if (userDataForm) {
   });
 }
 
-// password foem displayed
+// password form displayed
 if (userPasswordForm) {
   userPasswordForm.addEventListener('submit', async e => {
     e.preventDefault();

@@ -49,6 +49,7 @@ exports.getReviewForm = catchAsync(async (req, res, next) => {
   }
   res.status(200).render('review', {
     title: 'Review this tour',
+    tour,
   });
 });
 
