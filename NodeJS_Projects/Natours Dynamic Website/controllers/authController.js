@@ -104,7 +104,19 @@ exports.signup = catchAsync(async (req, res, next) => {
   )}/emailConfirm/${confirmToken}`;
   await new Email(newUser, confirmURL).sendWelcome();
   console.log(confirmURL);
-  createSendToken(newUser, 200, res);
+
+  // Delete last cookie
+  // res.cookie('jwt', 'loggedout', {
+  //   expires: new Date(Date.now() + 10 * 1000),
+  //   httpOnly: true,
+  // });
+  res.status(200).json({
+    status: 'success',
+    message: 'Confimiration email successfuly sent to your address',
+    data: {
+      newUser,
+    },
+  });
 });
 
 exports.emailConfirm = catchAsync(async (req, res, next) => {
@@ -131,6 +143,7 @@ exports.emailConfirm = catchAsync(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   // 3) Update
   await user.save({ validateBeforeSave: false });
+
   // 4) Log the user in, send JWT, now the reset password token will be forgotten - not valid
   createSendToken(user, 200, res);
 });
@@ -177,7 +190,7 @@ exports.logout = (req, res) => {
 exports.refreshToken = catchAsync(async (req, res, next) => {
   const { refreshToken: requestToken } = req.body;
   if (requestToken == null) {
-    return res.status(403).json({ message: 'Refresh Token is required!' });
+    return next(new AppError('Refresh Token is required!', 403));
   }
   const refreshToken = await RefreshToken.findOne({ token: requestToken });
   if (!refreshToken) {
@@ -241,14 +254,15 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
+    //console.log('bearer')
     token = req.headers.authorization.split(' ')[1];
     //If the client is the browser
     // then the token will be sent in a cookie
   } else if (req.cookies.jwt) {
+    // console.log('cookie')
     token = req.cookies.jwt;
   }
-  console.log(token)
-  if (!token) {
+  if (!token || token === 'null') {
     return next(
       new AppError('You are not logged in! Please log in to get access.', 401)
     );

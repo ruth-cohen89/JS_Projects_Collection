@@ -13,7 +13,7 @@ router.use('/:userId/bookings', bookingRouter);
 router.post('/signup', authController.signup);
 router.post('/emailConfirm/:token', authController.emailConfirm);
 router.post('/login', authController.login);
-router.post('refreshtoken', authController.refreshToken);
+router.post('/refreshToken', authController.refreshToken);
 router.get('/logout', authController.logout);
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
@@ -36,6 +36,7 @@ router.get('/me', userController.getMe, userController.getUser);
 
 router.patch(
   '/updateMe',
+  authController.protect,
   userController.uploadUserPhoto,
   userController.resizeUserPhoto,
   userController.updateMe
