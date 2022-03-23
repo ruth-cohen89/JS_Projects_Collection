@@ -94,8 +94,6 @@ const filterObj = (obj, ...allowedFields) => {
 // User updating himself
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs password data
-  // console.log(req.file);
-  // console.log(req.body);
   if (req.body.password || req.body.passwordConfirm) {
     return next(
       new AppError(
@@ -111,7 +109,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   // 2) Filtered out unwanted fields that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name', 'email');
   // If user uploads a photo, give it the name we specified
-  //console.log(req.file)
   if (req.file) filteredBody.photo = req.file.filename;
 
   // 3) Update user document

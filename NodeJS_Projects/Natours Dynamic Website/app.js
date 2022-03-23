@@ -25,7 +25,8 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 // enables access to the cookie from the request
 const cookieParser = require('cookie-parser');
-
+// Compress data we sent to the client(JSON/HTML)
+const compression = require('compression');
 //Operational error class
 const AppError = require('./utils/appError');
 //Error controller
@@ -116,6 +117,9 @@ app.use(
   })
 );
 
+// Compress al text sent to clients(not images)
+app.use(compression());
+
 // Test middleware, finds out when the request happened
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
@@ -136,7 +140,7 @@ app.use((req, res, next) => {
 app.use('/', viewRouter);
 
 // API requests
-app.use('/api/v1/tours', tourRouter);
+//app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/bookings', bookingRouter);

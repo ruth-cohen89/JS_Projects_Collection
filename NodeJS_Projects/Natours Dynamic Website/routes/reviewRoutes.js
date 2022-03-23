@@ -49,6 +49,4 @@ router
 
 module.exports = router;
 
-  //bookingController.isOutOfDate,
-  
-  // console.log('not booked and already passed');
+//bookingController.isOutOfDate,

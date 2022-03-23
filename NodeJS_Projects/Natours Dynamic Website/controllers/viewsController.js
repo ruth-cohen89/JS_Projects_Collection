@@ -36,17 +36,13 @@ exports.getTour = catchAsync(async (req, res, next) => {
       user: res.locals.user,
       tour,
     });
-    // console.log(booking)
-    // console.log(res.locals.user._id)
-    // console.log(tour._id)
+
     if (booking.length > 0) {
       // mark as not booked for template
-      //res.locals.notBooked = true;
       notBooked = false;
-      console.log('booking found');
+      //console.log('booking found');
     }
   }
-  console.log(notBooked)
   // 2) Build template
   // 3) Render template using data from 1)
   res.status(200).render('tour', {

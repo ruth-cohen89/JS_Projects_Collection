@@ -14,11 +14,10 @@ class APIFeatures {
 
     // 1B) Advanced filtering
     let queryStr = JSON.stringify(queryObj);
-    console.log(queryStr);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     // { difficulty: 'easy', duration: { $gte:5} }
     // { difficulty: 'easy', duration: { gte:5} }
-    console.log(queryStr);
+
     this.query = this.query.find(JSON.parse(queryStr));
     return this;
   }
@@ -27,7 +26,7 @@ class APIFeatures {
   sort() {
     if (this.queryString.sort) {
       //convert comma to whitespace
-      console.log(this.queryString.sort);
+      //console.log(this.queryString.sort);
       const sortBy = this.queryString.sort.split(',').join(' ');
       console.log(sortBy);
       this.query = this.query.sort(sortBy);

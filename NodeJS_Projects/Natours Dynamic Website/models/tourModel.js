@@ -69,7 +69,6 @@ const tourSchema = new mongoose.Schema(
           //In a validator function 'this' keyword points to the current doc
           //on NEW document creation (but not in 'update' func, in such case it will point to the node object)
           //So, this function works only for posting a new doc
-          //console.log(this);
           return val < this.price; //return true if priceDiscount is less than the price
         },
         message: 'Discount price ({VALUE}) should be below the regular price',
@@ -217,13 +216,6 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
-// Check if tour is sold out before creating ;)
-// tourSchema.pre('save', function (req, next) {
-//   const 
-
-//  // if 
-//   next();
-// });
 // QUERY MIDDLEWARE: executes for all functions starting with find
 
 //this refers to the current query
@@ -247,10 +239,10 @@ tourSchema.pre(/^find/, function (next) {
 
 //Runs after the query got executed,
 //Has an access to the returned docs
-tourSchema.post(/^find/, function (docs, next) {
-  console.log(`Query took: ${Date.now() - this.start} millisecs`);
-  next();
-});
+// tourSchema.post(/^find/, function (docs, next) {
+//   console.log(`Query took: ${Date.now() - this.start} millisecs`);
+//   next();
+// });
 
 // AGGREGATION MIDDLEWARE
 //Runs before an aggregation executes
@@ -269,14 +261,9 @@ tourSchema.post(/^find/, function (docs, next) {
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;
 
-//Converting the user ID's that the user inserts into the user objects
-//(creating embedded user docs inside the tour for creating a new tour)
-//We won't use it, because users are often updated...
-// tourSchema.pre('save', async function (next) {
-//   //.map() returns an array of promises
-//   //console.log(this.guides.map(async (id) => await User.findById(id)));
-//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
-//   this.guides = await Promise.all(guidesPromises);
-//   //console.log(this.guides)
+// Check if tour is sold out before creating ;)
+// tourSchema.pre('save', function (req, next) {
+//   const
+//  // if
 //   next();
-// });
+// })

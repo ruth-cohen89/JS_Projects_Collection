@@ -16,7 +16,7 @@ export const login = async (email, password) => {
   
   const res = await axios({
     method: 'POST',
-    url: 'http://127.0.0.1:8000/api/v1/users/login',
+    url: '/api/v1/users/login',
     data: { 
       email,
       password,
@@ -42,7 +42,7 @@ export const signUp = async (name, email, password, passwordConfirm) => {
   try {
     const res = await axios({
       method: 'POST',
-      url: 'http://127.0.0.1:8000/api/v1/users/signup',
+      url: '/api/v1/users/signup',
       data: { 
         email,
         password,
@@ -64,9 +64,7 @@ export const signUp = async (name, email, password, passwordConfirm) => {
 export const confirmEmail = async () => {
   try {
     const token = location.href.split('/')[4];
-    //console.log(location.href.split('/'))
-    const url = `http://127.0.0.1:8000/api/v1/users/emailConfirm/${token}`;
-   // console.log(url,'url')
+    const url = `/api/v1/users/emailConfirm/${token}`;
 
     const res = await axios({
       method: 'POST',
@@ -91,7 +89,7 @@ export const logout = async () => {
   try { 
     const res = await axios({
       method: 'GET',
-      url: 'http://127.0.0.1:8000/api/v1/users/logout',
+      url: '/api/v1/users/logout',
     });
     // reload page and send new cookie
     // location represents the current URL of the doc in the window
@@ -104,20 +102,18 @@ export const logout = async () => {
 
 export const forgotPassword = async (email) => {
   try { 
-    console.log('forgot')
     const res = await axios({
       method: 'POST',
-      url: 'http://127.0.0.1:8000/api/v1/users/forgotPassword',
+      url: '/api/v1/users/forgotPassword',
       data: { 
         email,
       }
     });
-   // console.log(res)
 
     if(res.data.status = 'success') {
       showAlert('success', 'Reset email sent!');
     }
-  //  console.log(location)
+
   } catch(err) {
     showAlert('error', err.response.data.message);
   }
@@ -126,16 +122,14 @@ export const forgotPassword = async (email) => {
 export const resetPassword = async (password, passwordConfirm) => {
   try { 
     const token = location.href.split('/')[4];
-    console.log(token, 'token')
     const res = await axios({
       method: 'PATCH',
-      url: `http://127.0.0.1:8000/api/v1/users/resetPassword/${token}`,
+      url: `/api/v1/users/resetPassword/${token}`,
       data: { 
         password,
         passwordConfirm,
       }
    });
-    //console.log(res)
     if(res.data.status = 'success') {
       showAlert('success', 'password has changed 😊');
       window.setTimeout(() => {
@@ -145,7 +139,6 @@ export const resetPassword = async (password, passwordConfirm) => {
     }
     //location.reload(true);
   } catch(err) {
-    console.log(err.response.data.message)
     showAlert('error', err.response.data.message);
   }
 };

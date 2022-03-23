@@ -11,7 +11,6 @@ exports.setTourUserIds = (req, res, next) => {
   // Allow nested routes
   //If user didn't specify tour/user in the body
   if (!req.body.tour) req.body.tour = req.params.tourId;
-  console.log(req.params.tourId);
   if (!req.body.user) req.body.user = req.user.id;
   next();
 };
@@ -26,7 +25,6 @@ exports.isBookedForUser = catchAsync(async (req, res, next) => {
     return next(new AppError('You did not book this tour 🥴', 401));
   }
   // Tour was actually booked
-  //console.log('booked!');
   next();
 });
 

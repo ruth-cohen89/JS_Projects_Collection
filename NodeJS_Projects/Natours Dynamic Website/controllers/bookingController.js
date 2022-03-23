@@ -54,7 +54,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
       },
     ],
   });
-  console.log(session);
+
   // 3) Create session as response
   res.status(200).json({
     status: 'success',
@@ -66,30 +66,15 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // This is only TEMPORARY, because it's UNSECURE: everyone can make bookings without paying
   const { tour, user, price } = req.query;
-  console.log(req.query)
   // If the request is not after user implemented checkout
   if (!tour && !user && !price) return next();
   await Booking.create({ tour, user, price });
 
-  console.log('Payment complete!');
-  //console.log(req.originalUrl.split('?'));
+  //console.log('Payment complete!');
 
   // Go to homepage ('/')
   res.redirect(req.originalUrl.split('?')[0]);
 });
-
-// for later use in creating the actual review
-//if the user didnt specify them in the request
-exports.setTourUserIds = (req, res, next) => {
-  // Allow nested routes
-  //If user didn't specify tour/user in the body
-  console.log(req.body.tour);
-  console.log(req.body.user);
-  if (!req.body.tour) req.body.tour = req.params.tourId;
-  console.log(req.params.tourId);
-  if (!req.body.user) req.body.user = req.user.id;
-  next();
-};
 
 // CRUD
 exports.createBooking = factory.createOne(Booking);

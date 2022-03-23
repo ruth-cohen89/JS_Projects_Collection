@@ -89,8 +89,7 @@ userSchema.pre('save', async function (next) {
 userSchema.pre('save', function (next) {
   //if password hasnt changed just now/the doc is new,
   if (!this.isModified('password') || this.isNew) return next();
-  // console.log('Password changed');
-  // console.log(Date.now());
+
   //Sometimes the new token is created a bit before passwordChangetAt is created,
   //so we subscrapt 1 second before saving, now the password will always change before the token is created
   this.passwordChangedAt = Date.now() - 1000;

@@ -97,7 +97,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     'host'
   )}/emailConfirm/${confirmToken}`;
   await new Email(newUser, confirmURL).sendWelcome();
-  console.log(confirmURL);
+  // console.log(confirmURL);
 
   // Delete last cookie
   // res.cookie('jwt', 'loggedout', {
@@ -114,7 +114,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.emailConfirm = catchAsync(async (req, res, next) => {
-  console.log('confirming...', req.originalUrl);
+  //console.log('confirming...', req.originalUrl);
   // console.log('confirming...', req.params.token)
   // 1) Get user based on the token
   const hashedToken = crypto
@@ -408,17 +408,16 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.stepOnePhoneVer = catchAsync((req, res, next) => {
-  console.log('step 1...');
+  //console.log('step 1...');
   
   const { number } = req.body;
-  console.log(number)
   const params = {
     originator: '',
     type: 'sms',
   };
   messagebird.verify.create(number, params, (err, response) => {
     if (err) {
-      console.log('error!', err);
+      // console.log('error!', err);
       return next(new AppError(err.errors[0].description, 400));
     }
     console.log('response:', response);

@@ -4,7 +4,6 @@ import axios from 'axios';
 import { showAlert } from './alerts'
 
 export const getPhoneNumber = async (number) => {
-  console.log('pop',number)
     try {
       const res = await axios({
         method: 'POST',
@@ -13,7 +12,6 @@ export const getPhoneNumber = async (number) => {
           number,
         }
       });
-      console.log(res,'jgg')
       if(res.data.status === 'success') {
         //showAlert('success', 'We sent your phone a verification number');
         const id = res.data.id;
@@ -31,7 +29,7 @@ export const getPhoneNumber = async (number) => {
   };
   
   export const checkCode = async (token) => {
-    console.log(token)
+    // console.log(token)
       try {
         const res = await axios({
           method: 'POST',

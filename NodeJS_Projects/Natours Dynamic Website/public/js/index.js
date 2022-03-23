@@ -73,7 +73,6 @@ if(reviewForm) {
       e.preventDefault();
       // Tour id was saved on the element
       const { tourId } = e.target.dataset;
-      //console.log(tourId)
       const review = document.getElementById('review').value; 
       const rating = document.getElementById('rating').value; 
       createReview(review, rating, tourId);
@@ -89,7 +88,6 @@ if(logOutBtn) {
 };
 
 if(forgotPasswordForm) {
-//  console.log('forgotpassform')
   forgotPasswordForm.addEventListener('submit', e => {
     e.preventDefault();
     const email = document.getElementById('email').value;  
@@ -98,7 +96,6 @@ if(forgotPasswordForm) {
 }
 
 if(resetPasswordForm) {
- //console.log('resetPassForm')
  resetPasswordForm.addEventListener('submit', e => {
   e.preventDefault();
   const password = document.getElementById('password').value; 

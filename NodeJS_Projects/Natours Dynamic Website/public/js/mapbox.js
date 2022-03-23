@@ -1,7 +1,7 @@
 // All js files in the public folder contain front end code
 // This file is running on the front end side
 /* eslint-disable */
-console.log('hello from the client');
+//console.log('hello from the client');
 // locations was sent from the tour template as a parameter
 exports.uppercase = str => str.toUpperCase()
 exports.a = 1
