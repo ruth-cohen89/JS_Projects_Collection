@@ -9232,7 +9232,7 @@ var createReview = /*#__PURE__*/function () {
             _context.prev = 7;
             _context.t0 = _context["catch"](0);
             //The error response from the API
-            (0, _alerts.showAlert)('error', _context.t0.response.data.message);
+            (0, _alerts.showAlert)('error', 'You have already reviewed this tour!');
 
           case 10:
           case "end":

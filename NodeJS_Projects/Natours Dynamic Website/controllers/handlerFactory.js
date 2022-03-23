@@ -43,8 +43,9 @@ exports.updateOne = (Model) =>
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
     //validators of schema run automatically when calling .create()
+    console.log(req.body)
     const doc = await Model.create(req.body);
-
+   console.log('created!')
     res.status(201).json({
       status: 'success',
       data: {

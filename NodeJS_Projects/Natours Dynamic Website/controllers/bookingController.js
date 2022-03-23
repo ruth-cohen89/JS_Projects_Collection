@@ -6,18 +6,34 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 
+// const booking = await Booking.find({
+//   user: req.user.id,
+//   tour,
+// });
+
+// // Check if user booked tour
+// // console.log(req.user.id)
+// // console.log(req.params.tourId)
+// if (booking.length !== 0) {
+//   console.log('booking found')
+//   return next(new AppError('You have already booked this tour!', 401));
+// }
+// res.locals.user = currentUser;
+
+// Preventing someone from getting checkout session direcltly from the API
 exports.isBooked = catchAsync(async (req, res, next) => {
   const booking = await Booking.find({
     user: req.user.id,
     tour: req.params.tourId,
   });
-  console.log(req.user.id)
-  console.log(req.params.tourId)
+
+  // console.log(req.user.id)
+  // console.log(req.params.tourId)
   if (booking.length !== 0) {
-    console.log('booking found')
+    //console.log('booking found');
     return next(new AppError('You have already booked this tour!', 401));
   }
-  console.log('not booked')
+
   next();
 });
 
@@ -80,6 +96,19 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // Go to homepage ('/')
   res.redirect(req.originalUrl.split('?')[0]);
 });
+
+// for later use in creating the actual review
+//if the user didnt specify them in the request
+exports.setTourUserIds = (req, res, next) => {
+  // Allow nested routes
+  //If user didn't specify tour/user in the body
+  console.log(req.body.tour);
+  console.log(req.body.user);
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  console.log(req.params.tourId);
+  if (!req.body.user) req.body.user = req.user.id;
+  next();
+};
 
 // CRUD
 exports.createBooking = factory.createOne(Booking);

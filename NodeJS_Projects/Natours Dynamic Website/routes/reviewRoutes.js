@@ -24,9 +24,11 @@ router
   //so no need to specicy the user id in the req
   // post '...api/v1/tours/5c88fa8cf4afda39709c2955/reviews'
   .post(
-    //Only users can post a review
+    // Only users can post a review
     authController.restrictTo('user'),
-    reviewController.isBookedForUser,
+    // bookingController.isBookedForUser,
+    // Check if book has already passed
+    // if(tour.startDate),
     reviewController.setTourUserIds,
     reviewController.createReview
   );
@@ -45,3 +47,7 @@ router
   );
 
 module.exports = router;
+
+  //bookingController.isOutOfDate,
+  
+  // console.log('not booked and already passed');

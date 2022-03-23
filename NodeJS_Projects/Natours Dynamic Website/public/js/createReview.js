@@ -24,6 +24,6 @@ export const createReview = async (review, rating, tourId) => {
 
   } catch (err) {
     //The error response from the API
-    showAlert('error', err.response.data.message);
+    showAlert('error', 'You have already reviewed this tour!');
   }
 };
