@@ -2,6 +2,7 @@ const crypto = require('crypto');
 //promisify function
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
+//const twilio = require('twilio');
 const messagebird = require('messagebird')(process.env.MESSAGEBIRD_API_KEY);
 const User = require('../models/userModel');
 const RefreshToken = require('../models/refreshTokenModel');
@@ -408,7 +409,9 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 exports.stepOnePhoneVer = catchAsync((req, res, next) => {
   console.log('step 1...');
+  
   const { number } = req.body;
+  console.log(number)
   const params = {
     originator: '',
     type: 'sms',
@@ -419,31 +422,7 @@ exports.stepOnePhoneVer = catchAsync((req, res, next) => {
       return next(new AppError(err.errors[0].description, 400));
     }
     console.log('response:', response);
-    // res.status(200).json({
-    //   status: 'success',
-    //   id: response.id,
-    //   message: 'Verification code sent to phone!',
-    // });
   });
-  // messagebird.verify.create '+972512397121'
-  //   number,
-  //   {
-  //     originator: 'Code',
-  //     template: 'Your verification code is %token.',
-  //   },
-  //   (err, response) => {
-  //     //console.log(result)
-  //     if (err) {
-  //       console.log(err)
-  //       //return next(new AppError('bad', 400));
-  //     }
-  //     console.log(response, 'moving to step 2');
-  //     res.status(200).json({
-  //       status: 'success',
-  //       message: 'Verification code sent to phone!',
-  //     });
-  //   }
-  // );
 });
 
 exports.stepTwoPhoneVer = catchAsync((req, res, next) => {
