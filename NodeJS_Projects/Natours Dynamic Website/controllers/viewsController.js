@@ -30,16 +30,15 @@ exports.getTour = catchAsync(async (req, res, next) => {
     return next(new AppError('There is no tour with that name.', 404));
   }
 
-  // If user is looged in check if booked tour
+  // If user is loged in check if booked tour
   if (res.locals.user) {
-    // Check if user
     const booking = await Booking.find({
       user: res.locals.user,
       tour,
     });
-    console.log(booking)
-    console.log(res.locals.user._id)
-    console.log(tour._id)
+    // console.log(booking)
+    // console.log(res.locals.user._id)
+    // console.log(tour._id)
     if (booking.length > 0) {
       // mark as not booked for template
       //res.locals.notBooked = true;
@@ -47,7 +46,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
       console.log('booking found');
     }
   }
-//console.log(notBooked)
+  console.log(notBooked)
   // 2) Build template
   // 3) Render template using data from 1)
   res.status(200).render('tour', {
