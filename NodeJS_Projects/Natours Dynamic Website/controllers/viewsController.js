@@ -47,7 +47,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
       console.log('booking found');
     }
   }
-console.log(notBooked)
+//console.log(notBooked)
   // 2) Build template
   // 3) Render template using data from 1)
   res.status(200).render('tour', {

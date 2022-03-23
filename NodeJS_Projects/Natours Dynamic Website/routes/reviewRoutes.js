@@ -2,6 +2,7 @@ const express = require('express');
 // eslint-disable-next-line import/extensions
 const reviewController = require('../controllers/reviewController');
 const authController = require('../controllers/authController');
+const bookingController = require('../controllers/bookingController');
 
 //By default each router has access to the parameters of his
 //mergeParams enables access to parameters of the former router
@@ -26,7 +27,7 @@ router
   .post(
     // Only users can post a review
     authController.restrictTo('user'),
-    // bookingController.isBookedForUser,
+    bookingController.isBooked,
     // Check if book has already passed
     // if(tour.startDate),
     reviewController.setTourUserIds,

@@ -6,34 +6,15 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 
-// const booking = await Booking.find({
-//   user: req.user.id,
-//   tour,
-// });
-
-// // Check if user booked tour
-// // console.log(req.user.id)
-// // console.log(req.params.tourId)
-// if (booking.length !== 0) {
-//   console.log('booking found')
-//   return next(new AppError('You have already booked this tour!', 401));
-// }
-// res.locals.user = currentUser;
-
-// Preventing someone from getting checkout session direcltly from the API
+// Preventing a user from reviewing a tour he hasnt booked
 exports.isBooked = catchAsync(async (req, res, next) => {
   const booking = await Booking.find({
     user: req.user.id,
     tour: req.params.tourId,
   });
-
-  // console.log(req.user.id)
-  // console.log(req.params.tourId)
-  if (booking.length !== 0) {
-    //console.log('booking found');
-    return next(new AppError('You have already booked this tour!', 401));
+  if (booking.length === 0) {
+    return next(new AppError('You have not booked this tour!', 404));
   }
-
   next();
 });
 

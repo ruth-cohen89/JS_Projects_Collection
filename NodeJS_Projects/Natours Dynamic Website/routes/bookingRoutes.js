@@ -16,9 +16,7 @@ router.use(authController.protect);
 router.get(
   '/checkout-session/:tourId',
   authController.protect,
-  //bookingController.isBooked,
   // duplicate booking will be caught by mongoose (model)
-  //bookingController.isOutOfDate,
   bookingController.getCheckoutSession
 );
 
@@ -27,7 +25,7 @@ router.use(authController.restrictTo('admin', 'lead-guide'));
 router
   .route('/')
   .get(bookingController.getAllBookings)
-  .post(bookingController.setTourUserIds,bookingController.createBooking);
+  .post(bookingController.setTourUserIds, bookingController.createBooking);
 
 // GET/PATCH/DELETE booking
 //If URL contains id parameter,

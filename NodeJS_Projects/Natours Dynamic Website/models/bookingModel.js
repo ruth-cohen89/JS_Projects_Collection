@@ -25,13 +25,7 @@ const bookingSchema = new mongoose.Schema(
     type: Boolean,
     default: true,
   },
-},
-  {
-    //Each time that the data is actually ouputted as JSON/object
-    // the virtuals(fields which are not stored in the DB) will be part of the output
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-  }
+}
 );
 
 // Prevent duplicate bookings on a tour from the same user
@@ -49,16 +43,17 @@ bookingSchema.pre(/^find/, function (next) {
   next();
 });
 
+
+const Booking = mongoose.model('Booking', bookingSchema);
+
+module.exports = Booking;
+
 // HOLD!!!
 // bookingSchema.pre('save', function (next) {
-//   const 
+//   const
 //   // this.populate('user').populate({
 //   //   path: 'tour',
 //   //   select: 'name',
 //   // });
 //   next();
 // });
-
-const Booking = mongoose.model('Booking', bookingSchema);
-
-module.exports = Booking;
