@@ -2,7 +2,10 @@ const crypto = require('crypto');
 //promisify function
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
-const client = require("twilio")(process.env.)
+const client = require('twilio')(
+  process.env.TWILLO_ACCOUNT_SID,
+  process.env.TWILLO_AUTH_TOKEN
+);
 //const twilio = require('twilio');
 //const messagebird = require('messagebird')(process.env.MESSAGEBIRD_API_KEY);
 
@@ -15,15 +18,15 @@ const Email = require('../utils/email');
 // Protect - for authentication
 // RestrictTo - for authorization
 
-//In production we use https in order to hide the token
-//Create token and return
+// In production we use https in order to hide the token
+// Create token and return
 const signAccessToken = (id) =>
-  //(payload, key, header options)
+  // (payload, key, header options)
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-//Create token & access token for login only
+// Create token & access token for login only
 const createSendToken = async (user, statusCode, res) => {
   const accessToken = signAccessToken(user._id);
 
@@ -144,39 +147,42 @@ exports.emailConfirm = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-// exports.sendNotification = catchAsync (req, res, context, event, callback, next) => {
-//   const client = context.getTwilioClient();
+exports.sendSms = catchAsync(async (req, res, next) => {
+  const result = await client.verify
+    .services(process.env.TWILLO_SERVICE_SID)
+    .verifications.create({
+      to: `+${req.query.phoneNumber}`,
+      channel: req.query.channel,
+    });
+  if (!result) {
+    return next(new AppError('Problem sending sms', 400));
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      result,
+    },
+  });
+});
 
-//   client.verify.services(context.VERIFY_SERVICE_SID)
-//     .verifications
-//     .create({to: `+${event.phoneNumber}`, channel: 'sms'})
-//     .then(verification => console.log(verification.status))
-//     .catch(e => {
-//       console.log(e)
-//       return callback(e)
-//     });
-
-//   return callback(null);
-// };
-
-// exports.verifyOtp = catchAsync(async (req, res, context, event, callback, next) => {
-//   const client = context.getTwilioClient();
-
-//   const check = await client.verify.services(process.env.VERIFY_SERVICE_SID)
-//     .verificationChecks
-//     .create({to: `+${event.phoneNumber}`, code: event.otp})
-//     .catch(e => {
-//       console.log(e)
-//       return callback(e)
-//     });
-  
-//   const response = new Twilio.Response();
-//   response.setStatusCode(200);
-//   response.appendHeader('Content-Type', 'application/json');
-//   response.setBody(check);
-
-//   return callback(null, response);
-// });
+exports.verifyCode = catchAsync(async (req, res, next) => {
+  console.log('shalom');
+  const result = await client.verify
+    .services(process.env.TWILLO_SERVICE_SID)
+    .verificationChecks.create({
+      to: `+${req.query.phoneNumber}`,
+      code: req.query.code,
+    });
+  if (!result) {
+    return next(new AppError('Problem veryfing user', 400));
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      result,
+    },
+  });
+});
 
 //login - verify name and password and create a token
 exports.login = catchAsync(async (req, res, next) => {

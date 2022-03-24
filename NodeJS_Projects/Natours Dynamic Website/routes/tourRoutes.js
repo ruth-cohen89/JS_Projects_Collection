@@ -44,6 +44,14 @@ router
 //Calculate distance from a certain point to all the tours in the collection
 router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
 
+router
+  .route('/')
+  .get(tourController.getAllTours)
+  .post(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.createTour
+  );
 
 //If URL contains id parameter,
 //Mongoose will try to find the tour with the id,

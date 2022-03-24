@@ -11,8 +11,8 @@ const router = express.Router();
 router.use('/:userId/bookings', bookingRouter);
 
 // 2-step verification
-// router.post('/send-notification', authController.sendNotification);
-// router.post('/verify-otp', authController.verifyOtp);
+router.get('/sendSms', authController.sendSms);
+router.get('/verifyCode', authController.verifyCode);
 
 router.post('/signup', authController.signup);
 router.post('/emailConfirm/:token', authController.emailConfirm);
