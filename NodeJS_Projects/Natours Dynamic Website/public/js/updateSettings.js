@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { showAlert, hideAlert } from './alerts'
 
-// type is either password or 'data' - email, name & photo
+// type: password/data(email, name & photo)
 export const updateSettings = async (data, type) => {
   try {
     const url = type === 'password'
@@ -18,7 +18,6 @@ export const updateSettings = async (data, type) => {
     showAlert('success', `${type.toUpperCase()} updated successfuly!`);
   }
   } catch (err) {
-    //The error response from the API
     showAlert('error', err.response.data.message);
   }
 };

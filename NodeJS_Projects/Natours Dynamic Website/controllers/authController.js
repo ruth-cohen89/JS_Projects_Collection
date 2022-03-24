@@ -1,13 +1,10 @@
 const crypto = require('crypto');
-//promisify function
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const client = require('twilio')(
   process.env.TWILLO_ACCOUNT_SID,
   process.env.TWILLO_AUTH_TOKEN
 );
-//const twilio = require('twilio');
-//const messagebird = require('messagebird')(process.env.MESSAGEBIRD_API_KEY);
 
 const User = require('../models/userModel');
 const RefreshToken = require('../models/refreshTokenModel');
@@ -18,7 +15,6 @@ const Email = require('../utils/email');
 // Protect - for authentication
 // RestrictTo - for authorization
 
-// In production we use https in order to hide the token
 // Create token and return
 const signAccessToken = (id) =>
   // (payload, key, header options)
@@ -50,7 +46,7 @@ const createSendToken = async (user, statusCode, res) => {
     httpOnly: true,
   };
 
-  // In production the cookie will be sent only on https
+  // In production the cookie will be sent only on https (for hiding the token inside)
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
   // SEND COOKIE
@@ -235,6 +231,7 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
 
   // If refresh token has expired
   if (RefreshToken.verifyExpiration(refreshToken)) {
+
     // Remove from db
     RefreshToken.findByIdAndRemove(refreshToken._id, {
       useFindAndModify: false,
@@ -333,6 +330,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 // Only for rendered pages, no errors!
+// Deciding how the header will look like
 exports.isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
     try {
@@ -354,9 +352,7 @@ exports.isLoggedIn = async (req, res, next) => {
       }
 
       // THERE IS A LOGGED IN USER
-      // Send user to template
       res.locals.user = currentUser;
-      //console.log('ok')
       return next();
     } catch (err) {
       return next();
@@ -366,10 +362,6 @@ exports.isLoggedIn = async (req, res, next) => {
 };
 
 // Authorization
-//retrict route to specified users only
-//A wrapper that takes in the args and returns the mw to execute now
-//which will have access to roles because of the closure
-//because we cant pass args directly to mw...
 exports.restrictTo =
   (...roles) =>
   (req, res, next) => {
@@ -384,20 +376,16 @@ exports.restrictTo =
   };
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-  // 1) Get user based on POSTed email (we don't get the id)
+  // 1) Get user based on POSTed email
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return next(new AppError('There is no user with this email address.', 404));
   }
 
   // 2) Generate the random reset token
-  // createPasswordResetToken modifies the data in user
-  //and returns the unencryped version of the token
-
-  // the token is unique and has an expiration date, thats why we use it
   const resetToken = user.createPasswordResetToken();
 
-  //Here we save the changes witout validating because we didnt modify all fields
+  // Save changes witout validating - not all fields were modified
   await user.save({ validateBeforeSave: false });
   // 3) Send it to user's email
   try {

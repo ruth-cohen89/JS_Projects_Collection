@@ -200,7 +200,8 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   });
 });
 
-// /tours-within/233/lating/lating=34.305562, -118.535168/unit/mi
+
+// Find tours within a radius /tours-within/233/lating/lating=34.305562, -118.535168/unit/mi
 exports.getToursWithin = catchAsync(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
@@ -231,6 +232,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   });
 });
 
+//Calculate distance from a certain point to all the tours in the collection
 exports.getDistances = catchAsync(async (req, res, next) => {
   const { latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
