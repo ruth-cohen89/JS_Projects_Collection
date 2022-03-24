@@ -7,11 +7,12 @@ const router = express.Router();
 
 router.use('/:userId/bookings', bookingRouter);
 
-router.get('/sendSms', authController.sendSms);
-router.get('/verifySmsCode', authController.verifyCode);
-
 router.post('/signup', authController.signup);
 router.post('/emailConfirm/:token', authController.emailConfirm);
+
+router.get('/sendSmsnCode', authController.sendSmsVerificationCode);
+router.get('/verifySmsCode', authController.verifySmsCode);
+
 router.post('/login', authController.login);
 router.post('/refreshToken', authController.refreshToken);
 router.get('/logout', authController.logout);

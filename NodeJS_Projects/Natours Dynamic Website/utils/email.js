@@ -13,22 +13,13 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // Sendgrid is the transporter
-      // emails are sent to the actual real user address
-      // user can use mailsac.com service (disposable)
       return nodemailer.createTransport(
-        // sendGrid is a predefined service
-        //(no need to specify server & port)
         nodemailerSendgrid({
           apiKey: process.env.SENDGRID_PASSWORD,
         })
       );
     }
 
-    // else - development, dont leak mails to real users
-    // MailTrap as the transporter (using SMTP)
-    // emails are trapped into our MailTrap inbox
-    // and not sent to the real user addresse
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -39,16 +30,13 @@ module.exports = class Email {
     });
   }
 
-  // Send the actual email
   async send(template, subject) {
-    // 1) Render HTML based on a pug template
     const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
       firstName: this.firstName,
       url: this.url,
       subject,
     });
 
-    // 2) Define email options
     const mailOptions = {
       from: this.from,
       to: this.to,
@@ -57,7 +45,6 @@ module.exports = class Email {
       text: htmlToText.fromString(html),
     };
 
-    // 3) Create a transport and send email
     await this.newTransport().sendMail(mailOptions);
   }
 

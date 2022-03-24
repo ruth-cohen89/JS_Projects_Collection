@@ -83,24 +83,6 @@ if(resetPasswordForm) {
 });
 }
 
-if(insertPhoneForm) {
-  console.log('insert phone')
-  insertPhoneForm.addEventListener('submit', e => {
-   e.preventDefault();
-   const phoneNumber = document.getElementById('tel').value; 
-   getPhoneNumber(phoneNumber);
- });
- }
-
- if(insertVerificationCode) {
-  console.log('insert code')
-  insertVerificationCode.addEventListener('submit', e => {
-   e.preventDefault();
-   const code = document.getElementById('code').value; 
-   checkCode(code);
- });
- }
-
 if (userDataForm) {
   userDataForm.addEventListener('submit', e => {
     e.preventDefault();
