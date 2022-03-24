@@ -13,10 +13,9 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // TODO: make sure you can send emails on prod (forgotPass and welcome)
-      // Sendgrid as the transporter (using SMTP)
-      // emails are sent to mailsac.com
-      // to the actual real user address
+      // Sendgrid is the transporter (using SMTP)
+      // emails are sent to the actual real user address
+      // user can use mailsac.com service (disposable)
       return nodemailer.createTransport(
         // sendGrid is a predefined service
         //(no need to specify server & port)
@@ -25,6 +24,7 @@ module.exports = class Email {
         })
       );
     }
+
     // else - development, dont leak mails to real users
     // MailTrap as the transporter (using SMTP)
     // emails are trapped into our MailTrap inbox
@@ -68,9 +68,7 @@ module.exports = class Email {
   }
 
   async sendPasswordReset() {
-    await this.send(
-      'passwordReset',
-      'Your password reset token (valid for only 10 minutes)'
-    );
+    await this.send('passwordReset', 'Password Reset');
+    console.log('Reset email sent!');
   }
 };
