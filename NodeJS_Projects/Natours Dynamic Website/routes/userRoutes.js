@@ -10,6 +10,10 @@ const router = express.Router();
 // Get all booking on user
 router.use('/:userId/bookings', bookingRouter);
 
+// 2-step verification
+// router.post('/send-notification', authController.sendNotification);
+// router.post('/verify-otp', authController.verifyOtp);
+
 router.post('/signup', authController.signup);
 router.post('/emailConfirm/:token', authController.emailConfirm);
 router.post('/login', authController.login);
@@ -17,10 +21,6 @@ router.post('/refreshToken', authController.refreshToken);
 router.get('/logout', authController.logout);
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
-
-// 2-step verification
-router.post('/stepOnePhoneVer', authController.stepOnePhoneVer);
-router.post('/stepTwoPhoneVer', authController.stepTwoPhoneVer);
 
 // Authentication with JWT implemented by protect method
 // Protecting all following operations,

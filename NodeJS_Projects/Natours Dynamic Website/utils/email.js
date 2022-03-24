@@ -13,7 +13,7 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // Sendgrid is the transporter (using SMTP)
+      // Sendgrid is the transporter
       // emails are sent to the actual real user address
       // user can use mailsac.com service (disposable)
       return nodemailer.createTransport(
@@ -62,7 +62,6 @@ module.exports = class Email {
   }
 
   async sendWelcome() {
-    //console.log(this);
     await this.send('welcome', 'Welcome to the Natours Family!');
     console.log('welcome email sent!');
   }

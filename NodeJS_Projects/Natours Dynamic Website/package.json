@@ -38,10 +38,11 @@
     "pug": "^3.0.2",
     "sharp": "^0.30.2",
     "slugify": "^1.6.5",
+    "speakeasy": "^2.0.0",
     "strip": "^3.0.0",
     "stripe": "^8.209.0",
-    "twilio": "^3.75.1",
-    "uuid": "^8.3.2",
+    "twilio": "^3.76.0",
+    "twilio-cli": "^3.2.1",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"
   },
@@ -57,7 +58,8 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.29.3",
     "parcel-bundler": "^1.12.5",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "twilio-run": "^3.4.1"
   },
   "engines": {
     "node": ">=10.0.0"

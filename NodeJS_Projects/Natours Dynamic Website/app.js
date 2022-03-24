@@ -4,15 +4,14 @@
 // the app listens to client requests,
 // according to the type of request
 // it operates the right series of mw
-// which ends up in a middle that actually
-// sends back the response
-// through the response object
+// which ends up in a mw that
+// ends up the req res cycle
 
-//path is used to manipulate path names
+// path is used to manipulate path names
 const path = require('path');
 
-//Create an express app, which is a series of middlewares
-//it automatically has a server inside
+// Create an express app, which is a series of middlewares
+// it automatically has a server inside
 const express = require('express');
 //third party middleware
 const morgan = require('morgan');
@@ -123,8 +122,6 @@ app.use(compression());
 // Test middleware, finds out when the request happened
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  // console.log(req.headers);
-  // console.log(req.cookies);
   next();
 });
 
@@ -140,7 +137,7 @@ app.use((req, res, next) => {
 app.use('/', viewRouter);
 
 // API requests
-//app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/bookings', bookingRouter);
@@ -161,5 +158,5 @@ app.all('*', (req, res, next) => {
 app.use(globalErrorHandler);
 
 // START THE SERVER
-//on our local machine 127.0.0.1
+// (on my local machine: 127.0.0.1:8000)
 module.exports = app;

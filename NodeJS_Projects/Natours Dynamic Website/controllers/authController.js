@@ -2,8 +2,10 @@ const crypto = require('crypto');
 //promisify function
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
+const client = require("twilio")(process.env.)
 //const twilio = require('twilio');
-const messagebird = require('messagebird')(process.env.MESSAGEBIRD_API_KEY);
+//const messagebird = require('messagebird')(process.env.MESSAGEBIRD_API_KEY);
+
 const User = require('../models/userModel');
 const RefreshToken = require('../models/refreshTokenModel');
 const catchAsync = require('../utils/catchAsync');
@@ -141,6 +143,40 @@ exports.emailConfirm = catchAsync(async (req, res, next) => {
   // 4) Log the user in, send JWT, now the reset password token will be forgotten - not valid
   createSendToken(user, 200, res);
 });
+
+// exports.sendNotification = catchAsync (req, res, context, event, callback, next) => {
+//   const client = context.getTwilioClient();
+
+//   client.verify.services(context.VERIFY_SERVICE_SID)
+//     .verifications
+//     .create({to: `+${event.phoneNumber}`, channel: 'sms'})
+//     .then(verification => console.log(verification.status))
+//     .catch(e => {
+//       console.log(e)
+//       return callback(e)
+//     });
+
+//   return callback(null);
+// };
+
+// exports.verifyOtp = catchAsync(async (req, res, context, event, callback, next) => {
+//   const client = context.getTwilioClient();
+
+//   const check = await client.verify.services(process.env.VERIFY_SERVICE_SID)
+//     .verificationChecks
+//     .create({to: `+${event.phoneNumber}`, code: event.otp})
+//     .catch(e => {
+//       console.log(e)
+//       return callback(e)
+//     });
+  
+//   const response = new Twilio.Response();
+//   response.setStatusCode(200);
+//   response.appendHeader('Content-Type', 'application/json');
+//   response.setBody(check);
+
+//   return callback(null, response);
+// });
 
 //login - verify name and password and create a token
 exports.login = catchAsync(async (req, res, next) => {
@@ -405,43 +441,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   // 4) Log the user in, send JWT, now the reset password token will be forgotten - not valid
   createSendToken(user, 200, res);
-});
-
-exports.stepOnePhoneVer = catchAsync((req, res, next) => {
-  //console.log('step 1...');
-  
-  const { number } = req.body;
-  const params = {
-    originator: '',
-    type: 'sms',
-  };
-  messagebird.verify.create(number, params, (err, response) => {
-    if (err) {
-      // console.log('error!', err);
-      return next(new AppError(err.errors[0].description, 400));
-    }
-    console.log('response:', response);
-  });
-});
-
-exports.stepTwoPhoneVer = catchAsync((req, res, next) => {
-  const { token } = req.body.token;
-
-  // ID returned upon creating the verify.
-  const { id } = req.body.id;
-
-  // User provided token to validate.
-  messagebird.verify.verify(id, token, (err, response) => {
-    if (err) {
-      console.log(err);
-      return next(new AppError(err.errors[0].description, 400));
-    }
-    console.log(response);
-    res.status(200).json({
-      status: 'success',
-      message: 'You have successfully verified your phone number🔥',
-    });
-  });
 });
 
 //Logged-in user changes his password (protect mw set the user in the req before)

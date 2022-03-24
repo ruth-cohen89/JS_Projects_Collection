@@ -17,7 +17,7 @@ import { updateSettings } from './updateSettings'
 
 import { bookTour } from './stripe';
 
-import { getPhoneNumber } from './2-step verification';
+import { sendNotification, verifyOtp } from './VerifySms';
 
 // DOM ELEMENTS 
 const mapBox = document.getElementById('map');
@@ -38,6 +38,35 @@ const userPasswordForm = document.querySelector('.form-user-password');
 const confirmBtn = document.querySelector('.nav__el--con');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const bookBtn = document.getElementById('book-tour');
+
+// const phoneForm = document.getElementById('phone-form');
+// const verifyForm = document.getElementById('verify-form');
+// const responseText = document.getElementById('response-text');
+
+// let phoneNumber;
+// if (phoneForm){
+//   phoneForm.addEventListener('submit', async e => {
+//     e.preventDefault();
+
+//     phoneNumber = document.getElementById('phone-number-input').value;
+
+//     sendNotification(phoneNumber);
+//   });
+// }
+
+// if (verifyForm){
+//   verifyForm.addEventListener('submit', async e => {
+//     e.preventDefault();
+
+//     const otp = document.getElementById('otp-input').value;
+
+//     const data = {
+//       phoneNumber: phoneNumber, 
+//       otp: otp
+//     };
+//     verifyOtp(phoneNumber, otp)
+//   });
+// }
 
 // DELEGATION
 if (mapBox) {
