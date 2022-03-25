@@ -50,11 +50,9 @@ module.exports = class Email {
 
   async sendWelcome() {
     await this.send('welcome', 'Welcome to the Natours Family!');
-    console.log('welcome email sent!');
   }
 
   async sendPasswordReset() {
     await this.send('passwordReset', 'Password Reset');
-    console.log('Reset email sent!');
   }
 };
