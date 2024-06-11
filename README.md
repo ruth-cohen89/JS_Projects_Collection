@@ -1,7 +1,4 @@
-# Repository Name
-
-## Description
-
+# JS_Projects_Collection
 This repository contains two projects:
 
 1. **nodejs_project:** [Brief description of your Node.js project goes here.]
